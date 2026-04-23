@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebMCP — Team Primer Deck · Internal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand: #0F3D3E;
+    --brand-dark: #092728;
+    --brand-mid: #1F5556;
+    --cream: #FAF6ED;
+    --cream-dark: #F2ECDD;
+    --coral: #E27B58;
+    --coral-dark: #C5624A;
+    --warn: #B53227;
+    --warn-bg: #FBE4DF;
+    --ink: #1A2828;
+    --ink-muted: #5A6868;
+    --ink-faint: #6E7672;
+    --rule: #DCD4BE;
+    --paper: #FDFBF4;
+    --gold: #FFD580;
+
+    --fs-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --fs-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --fs-body: 'Inter Tight', system-ui, sans-serif;
+  }
+
+  html, body { height: 100%; }
+  body {
+    font-family: var(--fs-body);
+    background: var(--cream);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* ───────── Deck shell — scale-to-fit ───────── */
+  .deck {
+    position: fixed;
+    inset: 0;
+    background: var(--cream);
+    overflow: hidden;
+  }
+  .slide {
+    position: absolute;
+    width: 1920px;
+    height: 1080px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(var(--deck-scale, 1));
+    transform-origin: center center;
+    padding: 56px 96px 64px;
+    display: none;
+    flex-direction: column;
+    background: var(--cream);
+    overflow: hidden;
+  }
+  .slide.active { display: flex; }
+  .slide[data-role="cover"],
+  .slide[data-role="close"] { background: var(--brand); color: var(--cream); }
+
+  /* Meta row */
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 44px;
+    flex-shrink: 0;
+  }
+  .meta-row .left { display: flex; gap: 18px; align-items: center; }
+  .meta-row .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--coral);
+  }
+  .slide[data-role="cover"] .meta-row,
+  .slide[data-role="close"] .meta-row { color: var(--gold); }
+  .slide[data-role="cover"] .meta-row .dot,
+  .slide[data-role="close"] .meta-row .dot { background: var(--gold); }
+
+  .eyebrow {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--coral-dark);
+    margin-bottom: 16px;
+  }
+
+  h1.title {
+    font-family: var(--fs-display);
+    font-weight: 400;
+    font-size: 64px;
+    line-height: 1.06;
+    letter-spacing: -0.018em;
+    color: var(--brand);
+    max-width: 26ch;
+  }
+  h1.title em { font-style: italic; color: var(--coral-dark); }
+  h1.title.wide { max-width: 40ch; }
+
+  .body {
+    margin-top: 36px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    flex-shrink: 0;
+    padding-top: 18px;
+    margin-top: 22px;
+    border-top: 1px solid var(--rule);
+  }
+  .footer-row .source {
+    text-transform: none;
+    letter-spacing: 0.04em;
+    font-size: 11.5px;
+    font-family: var(--fs-body);
+    color: var(--ink-muted);
+    max-width: 70%;
+    line-height: 1.5;
+  }
+  .slide[data-role="cover"] .footer-row,
+  .slide[data-role="close"] .footer-row {
+    border-top-color: rgba(250,246,237,0.18);
+    color: rgba(250,246,237,0.6);
+  }
+
+  /* ───────── Cover ───────── */
+  .cover-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+  }
+  .cover-block .lead {
+    font-family: var(--fs-mono);
+    font-size: 12px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .cover-block h1 {
+    font-family: var(--fs-display);
+    font-weight: 300;
+    font-size: 124px;
+    line-height: 0.96;
+    letter-spacing: -0.025em;
+    color: var(--cream);
+    max-width: 14ch;
+  }
+  .cover-block h1 em { font-style: italic; color: var(--gold); }
+  .cover-block .sub {
+    font-size: 22px;
+    color: rgba(250,246,237,0.85);
+    max-width: 56ch;
+    line-height: 1.5;
+    margin-top: 12px;
+  }
+
+  /* ───────── Single-sentence display slide ───────── */
+  .one-sentence {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 32px;
+  }
+  .one-sentence .quote {
+    font-family: var(--fs-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 56px;
+    line-height: 1.18;
+    color: var(--brand);
+    letter-spacing: -0.012em;
+    max-width: 30ch;
+  }
+  .one-sentence .quote strong {
+    font-style: normal;
+    font-weight: 500;
+    color: var(--coral-dark);
+  }
+  .one-sentence .coda {
+    font-family: var(--fs-mono);
+    font-size: 14px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    max-width: 50ch;
+  }
+  .one-sentence .coda strong { color: var(--brand); }
+
+  /* ───────── Three-things grid ───────── */
+  .three-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    flex: 1;
+    margin-top: 8px;
+  }
+  .thing-card {
+    background: var(--paper);
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border-top: 4px solid var(--coral);
+  }
+  .thing-card .num {
+    font-family: var(--fs-display);
+    font-weight: 300;
+    font-size: 72px;
+    line-height: 0.9;
+    color: var(--coral-dark);
+    letter-spacing: -0.02em;
+  }
+  .thing-card .h {
+    font-family: var(--fs-display);
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 1.2;
+    color: var(--brand);
+    letter-spacing: -0.012em;
+  }
+  .thing-card .body-text {
+    font-size: 16.5px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+
+  /* ───────── MCP-confusion comparison ───────── */
+  .mcp-compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    margin-top: 4px;
+  }
+  .mcp-compare > div {
+    padding: 32px 32px;
+  }
+  .mcp-compare > div:first-child {
+    border-right: 1px solid var(--rule);
+    background: var(--cream-dark);
+  }
+  .mcp-compare .col-h {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 12px;
+  }
+  .mcp-compare .col-name {
+    font-family: var(--fs-display);
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 1.1;
+    color: var(--brand);
+    margin-bottom: 16px;
+    letter-spacing: -0.012em;
+  }
+  .mcp-compare .col-desc {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  .mcp-compare .col-desc strong { color: var(--brand); font-weight: 600; }
+
+  .deploy-line {
+    margin-top: 24px;
+    background: var(--brand);
+    color: var(--cream);
+    padding: 24px 32px;
+    display: flex;
+    gap: 24px;
+    align-items: baseline;
+  }
+  .deploy-line .label {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    flex-shrink: 0;
+    width: 200px;
+  }
+  .deploy-line .quote {
+    font-family: var(--fs-display);
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.4;
+    color: var(--cream);
+  }
+  .deploy-line .quote em {
+    color: var(--gold);
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  /* ───────── Q + A slide ───────── */
+  .qa-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 36px;
+  }
+  .qa-block .q {
+    font-family: var(--fs-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 52px;
+    line-height: 1.18;
+    color: var(--brand);
+    letter-spacing: -0.012em;
+    max-width: 28ch;
+  }
+  .qa-block .q::before {
+    content: '"';
+    color: var(--coral-dark);
+    margin-right: 6px;
+  }
+  .qa-block .q::after {
+    content: '"';
+    color: var(--coral-dark);
+  }
+  .qa-block .a {
+    font-size: 22px;
+    line-height: 1.55;
+    color: var(--ink);
+    max-width: 70ch;
+    border-top: 1px solid var(--rule);
+    padding-top: 28px;
+  }
+  .qa-block .a strong { color: var(--brand); font-weight: 600; }
+  .qa-block .a-label {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--coral-dark);
+    margin-bottom: 12px;
+    display: block;
+  }
+  .qa-block .deploy-line {
+    margin-top: 0;
+  }
+
+  /* ───────── Don't-say slide ───────── */
+  .dont-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid var(--rule);
+    margin-top: 8px;
+  }
+  .dont-row {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 24px;
+    padding: 18px 8px;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .dont-row .mark {
+    font-family: var(--fs-display);
+    font-size: 32px;
+    color: var(--warn);
+    line-height: 1;
+    text-align: center;
+  }
+  .dont-row .text {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  .dont-row .text strong {
+    color: var(--brand);
+    font-weight: 600;
+  }
+  .dont-row .text em {
+    color: var(--ink-muted);
+    font-style: italic;
+  }
+
+  /* ───────── Meeting flow ───────── */
+  .flow-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-top: 1px solid var(--rule);
+    margin-top: 4px;
+  }
+  .flow-step {
+    display: grid;
+    grid-template-columns: 80px 1fr 200px;
+    gap: 28px;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .flow-step .num {
+    font-family: var(--fs-display);
+    font-weight: 300;
+    font-size: 36px;
+    color: var(--coral-dark);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .flow-step .desc {
+    font-size: 17px;
+    line-height: 1.45;
+    color: var(--ink);
+  }
+  .flow-step .desc strong { color: var(--brand); font-weight: 600; }
+  .flow-step .time {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    text-align: right;
+  }
+  .flow-step.demo {
+    background: var(--paper);
+  }
+  .flow-step.demo .desc strong { color: var(--coral-dark); }
+
+  .flow-coda {
+    margin-top: 24px;
+    font-family: var(--fs-display);
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.45;
+    color: var(--brand);
+    max-width: 70ch;
+  }
+  .flow-coda strong { color: var(--coral-dark); font-weight: 500; font-style: normal; }
+
+  /* ───────── Escape-hatch quotes ───────── */
+  .escape-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 8px;
+  }
+  .escape-quote {
+    font-family: var(--fs-display);
+    font-style: italic;
+    font-size: 26px;
+    line-height: 1.35;
+    color: var(--brand);
+    padding: 22px 28px;
+    background: var(--paper);
+    letter-spacing: -0.008em;
+    max-width: 80ch;
+  }
+  .escape-quote::before {
+    content: '"';
+    color: var(--coral-dark);
+    margin-right: 4px;
+  }
+  .escape-quote::after {
+    content: '"';
+    color: var(--coral-dark);
+  }
+  .escape-coda {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--fs-display);
+    font-size: 22px;
+    color: var(--ink);
+    max-width: 70ch;
+    line-height: 1.45;
+  }
+  .escape-coda strong { color: var(--brand); font-weight: 600; }
+
+  /* ───────── Close slide ───────── */
+  .close-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 32px;
+  }
+  .close-block .punchline {
+    font-family: var(--fs-display);
+    font-weight: 300;
+    font-style: italic;
+    font-size: 88px;
+    line-height: 1.05;
+    color: var(--cream);
+    letter-spacing: -0.022em;
+    max-width: 22ch;
+  }
+  .close-block .punchline em {
+    color: var(--gold);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .close-block .links {
+    display: flex;
+    gap: 32px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(250,246,237,0.2);
+  }
+  .close-block .link-item {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(250,246,237,0.6);
+  }
+  .close-block .link-item .url {
+    display: block;
+    text-transform: none;
+    letter-spacing: 0.04em;
+    font-size: 13px;
+    color: var(--gold);
+    margin-top: 6px;
+  }
+  .close-block .link-item .url a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255,213,128,0.4);
+  }
+  .close-block .link-item .url a:hover {
+    border-bottom-color: var(--gold);
+  }
+
+  /* ───────── Speaker notes overlay ───────── */
+  aside.notes { display: none; }
+  .notes-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(9, 39, 40, 0.96);
+    color: var(--cream);
+    padding: 56px 80px;
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .notes-overlay.visible { display: flex; }
+  .notes-overlay .notes-meta {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--coral);
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .notes-overlay h2 {
+    font-family: var(--fs-display);
+    font-weight: 300;
+    font-size: 32px;
+    line-height: 1.2;
+    color: var(--cream);
+    margin-bottom: 32px;
+    max-width: 30ch;
+  }
+  .notes-overlay .notes-body {
+    font-size: 17px;
+    line-height: 1.65;
+    max-width: 78ch;
+    color: rgba(250,246,237,0.92);
+  }
+  .notes-overlay .notes-body p { margin-bottom: 16px; }
+  .notes-overlay .notes-body strong { color: var(--gold); font-weight: 600; }
+  .notes-overlay .notes-body em {
+    color: var(--coral);
+    font-style: italic;
+    font-family: var(--fs-display);
+    font-size: 19px;
+  }
+  .notes-overlay .notes-body .step {
+    display: block;
+    font-family: var(--fs-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--coral);
+    margin-top: 18px;
+    margin-bottom: 4px;
+  }
+  .notes-overlay kbd {
+    background: rgba(250,246,237,.18);
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: 9.5px;
+  }
+
+  /* ───────── Help row ───────── */
+  .help-overlay {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--brand);
+    color: var(--cream);
+    padding: 8px 18px;
+    font-family: var(--fs-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    z-index: 50;
+    opacity: 0.9;
+    display: flex;
+    gap: 18px;
+    transition: opacity 0.4s ease;
+  }
+  .help-overlay.faded { opacity: 0; pointer-events: none; }
+  .help-overlay kbd {
+    background: rgba(250,246,237,0.18);
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: 9.5px;
+    margin-right: 4px;
+  }
+
+  .progress {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    z-index: 60;
+  }
+  .progress .fill {
+    height: 100%;
+    background: var(--coral);
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="progressFill"></div></div>
+
+<div class="deck" id="deck">
+
+  <!-- ════════ SLIDE 1 — COVER ════════ -->
+  <section class="slide" data-role="cover" data-title="Cover">
+    <div class="meta-row">
+      <div class="left"><span class="dot"></span><span>WebMCP team primer</span></div>
+      <div>Internal · do not share</div>
+    </div>
+    <div class="cover-block">
+      <div class="lead">5 minutes before you walk in</div>
+      <h1>Don't sell what <em>you don't understand.</em></h1>
+      <div class="sub">A working knowledge of WebMCP — and the one trap (MCP vs WebMCP) that derails the meeting if you fumble it. Read the floor; ask questions before you go in.</div>
+    </div>
+    <div class="footer-row">
+      <div class="source">Companion to: webmcp-pharma-pitch deck</div>
+      <div>01 / 11</div>
+    </div>
+    <aside class="notes">
+      Open the training session with the cover for ~10 seconds. Don't read it aloud. Then advance.
+      <em>"This is the floor — not the ceiling. If you can't say what's in the next ten slides in your own words, you're not ready to be in the room."</em>
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 2 — ONE SENTENCE ════════ -->
+  <section class="slide" data-role="main" data-title="The whole thing in one sentence">
+    <div class="meta-row">
+      <div class="left"><span class="dot"></span><span>The definition</span></div>
+      <div>02 / 11</div>
+    </div>
+    <div class="eyebrow">If you remember nothing else</div>
+    <div class="one-sentence">
+      <div class="quote">WebMCP is a way for a brand's website to publish a list of <strong>approved answers</strong> that AI assistants like ChatGPT, Gemini, and Claude can <strong>read directly</strong> — instead of guessing or pulling from random sources.</div>
+      <div class="coda"><strong>That's it.</strong> Everything else is detail.</div>
+    </div>
+    <div class="footer-row">
+      <div class="source">Practice saying this out loud. If you stumble, read it again.</div>
+      <div>02 / 11</div>
+    </div>
+    <aside class="notes">
+      <strong>This is the slide everyone needs to internalize.</strong> Read the sentence aloud. Then say:
+      <em>"That sentence is your whole job. If a client asks 'what's WebMCP,' you say that sentence. Don't improvise. Don't add jargon. Don't add 'well actually' caveats."</em>
+
+      <span class="step">If your team looks tense</span>
+      <em>"Look — we don't need to be technical experts. We need to be content experts who happen to have a new content surface to publish to. That's it."</em>
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 3 — THREE THINGS ════════ -->
+  <section class="slide" data-role="main" data-title="Three things to remember">
+    <div class="meta-row">
+      <div class="left"><span class="dot"></span><span>The three pillars</span></div>
+      <div>03 / 11</div>
+    </div>
+    <div class="eyebrow">Own these or don't go in</div>
+    <h1 class="title">Three things — say them in your <em>own words</em> before you walk in.</h1>
+    <div class="body">
+      <div class="three-grid">
+        <div class="thing-card">
+          <div class="num">01</div>
+          <div class="h">It's content work — not engineering.</div>
+          <div class="body-text">The brand publishes a small set of structured answers (dosing, interactions, side effects) on their existing website. AI assistants read those when patients ask.</div>
+        </div>
+        <div class="thing-card">
+          <div class="num">02</div>
+          <div class="h">It's the same family as things you already do.</div>
+          <div class="body-text">Schema.org tags, OpenGraph snippets, ALT text — the whole structured-content-for-machines world. WebMCP is in that family. The audience is just new (AI assistants).</div>
+        </div>
+        <div class="thing-card">
+          <div class="num">03</div>
+          <div class="h">The agency owns it.</div>
+          <div class="body-text">Brand IT does a few hours of plumbing — they wire up one URL. Everything else — questions, answers, MLR cycle, updates — is the agency's content workflow.</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-row">
+      <div class="source">If you can deliver these three points without notes, you can deliver the WebMCP slide.</div>
+      <div>03 / 11</div>
+    </div>
+    <aside class="notes">
+      <strong>Make people say these out loud during training.</strong> Not read — say. In their own words.
+
+      <em>"Pick a pillar. Now explain it to me like I'm a pharma CMO who's never heard of WebMCP. Go."</em>
+
+      <span class="step">Common stumble</span>
+      People skip pillar 3 because it feels self-promotional. It's not — it's the answer to "is this our agency or a new vendor?" If they don't say "agency owns it," the client routes the work to their IT vendor and we lose the project.
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 4 — MCP CONFUSION ════════ -->
+  <section class="slide" data-role="main" data-title="The MCP confusion">
+    <div class="meta-row">
+      <div class="left"><span class="dot"></span><span>The most common trap</span></div>
+      <div>04 / 11</div>
+    </div>
+    <div class="eyebrow">Read this twice. Memorize the deploy line.</div>
+    <h1 class="title wide">Someone in the meeting <em>will</em> get tripped up on "MCP."</h1>
+    <div class="body">
+      <div class="mcp-compare">
+        <div>
+          <div class="col-h">◆ MCP</div>
+          <div class="col-name">Model Context Protocol</div>
+          <div class="col-desc">A protocol that AI applications use to <strong>pull internal data inward</strong> — connecting an AI app to internal databases, tools, documents. <strong>Backend infrastructure.</strong> Built by IT/engineering teams.</div>
+        </div>
+        <div>
+          <div class="col-h">◇ WebMCP</div>
+          <div class="col-name">Web Model Context Protocol</div>
+          <div class="col-desc">The same naming family applied at the browser. Lets a public website <strong>publish content outward</strong> — declaring what it'll answer and the answer. <strong>Public-facing content.</strong> Built and owned by the agency / brand team.</div>
+        </div>
+      </div>
+      <div class="deploy-line">
+        <div class="label">Sentence to deploy</div>
+        <div class="quote">"Common confusion — they share a name because they share principles, but MCP is your <em>backend</em>, WebMCP is your <em>front door</em>. This conversation is only about the front door."</div>
+      </div>
+    </div>
+    <div class="footer-row">
+      <div class="source">If anyone insists on technical depth, the deck has a backup slide (B6) for it. Don't go deeper unprompted.</div>
+      <div>04 / 11</div>
+    </div>
+    <aside class="notes">
+      <strong>This is the single most likely reason the meeting falls apart.</strong>
+
+      <em>"A semi-technical person in the room will hear 'MCP,' connect it to a backend protocol they vaguely remember from an Anthropic article, and decide this is engineering's problem. The whole conversation routes to IT. We lose the project to a system integrator."</em>
+
+      <em>"The deploy line is your one tool. Memorize it. Front door, not backend. Say it once, move on. Don't argue about it."</em>
+
+      <span class="step">If it gets challenged</span>
+      Don't defend the protocol distinction technically. Just keep returning to: "the WebMCP work IS content work. The agency does it. Brand IT does a few hours of plumbing."
+
+      <span class="step">If you're really stuck</span>
+      Punt to the follow-up. <em>"Great question — let's bring our technical lead and your digital team into the same room next week and we'll walk through the architectural side."</em>
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 5 — "isn't this just an API?" ════════ -->
+  <section class="slide" data-role="main" data-title="If asked: isn't this just an API?">
+    <div class="meta-row">
+      <div class="left"><span class="dot"></span><span>Trap question · 1 of 3</span></div>
+      <div>05 / 11</div>
+    </div>
+    <div class="eyebrow">When the IT-aware person speaks up</div>
+    <div class="qa-block">
+      <div class="q">Isn't this just an API?</div>
+      <div class="a">
+        <span class="a-label">Acknowledge → reframe → metaphor</span>
+        <strong>Yes, technically.</strong> But that framing is unhelpful and feels engineering-y. Steer back to the menu metaphor — that's what makes it land for non-technical people.
+      </div>
+      <div class="deploy-line">
+        <div class="label">Say this</div>
+        <div class="quote">"In the technical sense, yes. But for your team it works exactly like any other content workflow — your agency writes <em>approved answers</em> and publishes them. The technical wiring is a few hours of one-time setup. Everything that matters happens in the existing MLR cycle."</div>
+      </div>
+    </div>
+    <div class="footer-row">
+      <div class="source">After delivering — pivot back: "Your website hands the AI a menu of questions it can answer."</div>
+      <div>05 / 11</div>
+    </div>
+    <aside class="notes">
+      The trap: confirming "yes it's an API" without reframing makes the client mentally route the work to engineering. The fix: confirm the technical fact, immediately pivot to "it works like any content workflow."
+
+      <em>"Don't deny the technical truth. Acknowledge it, then bridge: 'but for your team it works like any content cycle.' Then go back to the menu metaphor — that's the picture that sticks."</em>
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 6 — IT vendor derail ════════ -->
+  <section class="slide" data-role="main" data-title="If derailed: we'd need our IT vendor">
+    <div class="meta-row">
+      <div class="left"><span class="dot"></span><span>Trap question · 2 of 3</span></div>
+      <div>06 / 11</div>
+    </div>
+    <div class="eyebrow">The conversation-killer the deck is built to prevent</div>
+    <div class="qa-block">
+      <div class="q">We'd need to talk to our IT vendor about this.</div>
+      <div class="a">
+        <span class="a-label">If you let this stand, you lose the project</span>
+        <strong>This is the worst outcome.</strong> The client routes the conversation to a system integrator who has no relationship with the brand and no MLR experience. By the time it comes back to you, the scope has tripled and the agency is the subcontractor. Don't let it stand.
+      </div>
+      <div class="deploy-line">
+        <div class="label">Push back gently</div>
+        <div class="quote">"Actually no — that's the great part. Brand IT does a few hours of plumbing once. Everything that matters — the questions, the answers, the MLR cycle, the updates — is content work that <em>your agency</em> does. We're already set up for it. There's no new vendor to bring in."</div>
+      </div>
+    </div>
+    <div class="footer-row">
+      <div class="source">Don't be combative — be confident. The client is offering a path of perceived safety; show them the agency-led path is actually safer.</div>
+      <div>06 / 11</div>
+    </div>
+    <aside class="notes">
+      <strong>This is the single highest-stakes moment of the meeting.</strong> If the client mentally hands this off to IT, the project is gone — or worse, becomes a 6-month integration with no MLR insight.
+
+      <em>"Don't argue. Don't get defensive. Just confidently restate: 'this is content. The plumbing is trivial. Your agency does the work that matters — the same MLR cycle you already trust us with.'"</em>
+
+      <span class="step">If they push back</span>
+      <em>"Happy to bring our technical lead to the next conversation if it would help your IT team get comfortable. But the bulk of this — the part with budget and timeline — sits with us."</em>
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 7 — How do you actually do this ════════ -->
+  <section class="slide" data-role="main" data-title="If asked: how do you actually do this?">
+    <div class="meta-row">
+      <div class="left"><span class="dot"></span><span>Trap question · 3 of 3</span></div>
+      <div>07 / 11</div>
+    </div>
+    <div class="eyebrow">When asked for technical depth you don't have</div>
+    <div class="qa-block">
+      <div class="q">How do you actually build this? What are the steps?</div>
+      <div class="a">
+        <span class="a-label">Do not improvise an answer</span>
+        <strong>You will get this question. Do not improvise a technical answer.</strong> Don't guess at JSON, schemas, deployment steps, or anything technical. You will get something wrong, the room will notice, and credibility evaporates.
+      </div>
+      <div class="deploy-line">
+        <div class="label">Punt cleanly</div>
+        <div class="quote">"That's the right question for the follow-up — when we walk through the scope on a real brand, we'll bring our <em>technical lead</em> and your digital team into the same room. Today is just to land the concept."</div>
+      </div>
+    </div>
+    <div class="footer-row">
+      <div class="source">Punting to a follow-up with the right people is more credible than fumbling a technical answer.</div>
+      <div>07 / 11</div>
+    </div>
+    <aside class="notes">
+      The instinct is to prove you know what you're talking about by trying to answer. Resist it. Punting is the strong move.
+
+      <em>"You're not the technical person in this conversation. You're the strategy person. The technical answer comes from someone whose job it is to give it. You'll set up that conversation, but not have it yourself."</em>
+
+      <span class="step">If they keep pushing</span>
+      <em>"I want to give you a precise answer rather than approximate one. Let me get our technical lead on the follow-up call this week."</em>
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 8 — What NOT to say ════════ -->
+  <section class="slide" data-role="main" data-title="What NOT to say">
+    <div class="meta-row">
+      <div class="left"><span class="dot"></span><span>The forbidden phrases</span></div>
+      <div>08 / 11</div>
+    </div>
+    <div class="eyebrow">Cuts the meeting short, tanks credibility</div>
+    <h1 class="title">Don't say these — even if you think you can <em>pull it off.</em></h1>
+    <div class="body">
+      <div class="dont-list">
+        <div class="dont-row">
+          <div class="mark">⊘</div>
+          <div class="text"><strong>"Schema markup"</strong> without defining it. <em>Most clients don't know what it is. Say "structured content tags" — gesture at it as familiar without making them prove they know.</em></div>
+        </div>
+        <div class="dont-row">
+          <div class="mark">⊘</div>
+          <div class="text"><strong>"JSON," "API endpoint," "tool registry."</strong> <em>The client glazes over. Lose the technical vocabulary; the deck doesn't use it.</em></div>
+        </div>
+        <div class="dont-row">
+          <div class="mark">⊘</div>
+          <div class="text"><strong>Quote the protocol spec.</strong> <em>If you find yourself referencing W3C section numbers, you've lost the room.</em></div>
+        </div>
+        <div class="dont-row">
+          <div class="mark">⊘</div>
+          <div class="text"><strong>Promise specific browser timelines</strong> beyond "Chrome today, Edge likely soon (Microsoft co-authored)." <em>Anything more specific is speculation.</em></div>
+        </div>
+        <div class="dont-row">
+          <div class="mark">⊘</div>
+          <div class="text"><strong>Quote a price.</strong> <em>Say: "Happy to scope that in the follow-up — depends on the brand and how your MLR workflow is set up today."</em></div>
+        </div>
+        <div class="dont-row">
+          <div class="mark">⊘</div>
+          <div class="text"><strong>Apologize for the fictional drug.</strong> <em>The disclaimer is on the slide; the room sees it. Apologizing implies it's a problem you're conceding.</em></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-row">
+      <div class="source">Read this once before any meeting. Then read it again.</div>
+      <div>08 / 11</div>
+    </div>
+    <aside class="notes">
+      Walk through each one in training. For each, ask the team: <em>"Have you said this in a meeting before? What happened?"</em>
+
+      Most of these are habits picked up from selling other products. Naming them out loud helps unlearn them.
+
+      <span class="step">The hardest to break</span>
+      "Schema markup" is the hardest because it feels like the right comparison. It is the right comparison — but the client has to recognize it for the metaphor to work. Half don't. Use "structured content tags" instead and the metaphor lands universally.
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 9 — Meeting flow ════════ -->
+  <section class="slide" data-role="main" data-title="The meeting flow">
+    <div class="meta-row">
+      <div class="left"><span class="dot"></span><span>The 10-minute arc</span></div>
+      <div>09 / 11</div>
+    </div>
+    <div class="eyebrow">Memorize the shape of the meeting</div>
+    <h1 class="title">The deck does most of the work — your job is to <em>not break it.</em></h1>
+    <div class="body">
+      <div class="flow-list">
+        <div class="flow-step">
+          <div class="num">01</div>
+          <div class="desc">Hook on <strong>40M</strong> ChatGPT health users daily — set up that AI is already in your patients' lives</div>
+          <div class="time">~ 45 sec</div>
+        </div>
+        <div class="flow-step">
+          <div class="num">02</div>
+          <div class="desc">Show <strong>traffic collapse</strong> — the problem is structural, not cyclical</div>
+          <div class="time">~ 60 sec</div>
+        </div>
+        <div class="flow-step">
+          <div class="num">03</div>
+          <div class="desc">Show the AI is <strong>talking about your drug</strong> whether you participate or not — Guardian misinfo + FDA enforcement</div>
+          <div class="time">~ 75 sec</div>
+        </div>
+        <div class="flow-step">
+          <div class="num">04</div>
+          <div class="desc">Introduce WebMCP — <strong>content work, not infrastructure, agency owns it</strong></div>
+          <div class="time">~ 90 sec</div>
+        </div>
+        <div class="flow-step">
+          <div class="num">05</div>
+          <div class="desc">Show <strong>MLR inversion</strong> — compliance is on the inside now, not chasing</div>
+          <div class="time">~ 60 sec</div>
+        </div>
+        <div class="flow-step">
+          <div class="num">06</div>
+          <div class="desc">Tee up <strong>Veritrax</strong> — fictional drug, here's why</div>
+          <div class="time">~ 30 sec</div>
+        </div>
+        <div class="flow-step demo">
+          <div class="num">07</div>
+          <div class="desc"><strong>Run the demo.</strong> This does the persuasion. Don't over-narrate. Stop talking on the MLR overlay.</div>
+          <div class="time">~ 3-4 min</div>
+        </div>
+        <div class="flow-step">
+          <div class="num">08</div>
+          <div class="desc">Soft close — ask for a second meeting with their <strong>digital + MLR leads</strong></div>
+          <div class="time">~ 60 sec</div>
+        </div>
+      </div>
+      <div class="flow-coda">If you forget everything else: <strong>the demo is the persuasion.</strong> Your job is to set it up well and not screw up the WebMCP framing.</div>
+    </div>
+    <div class="footer-row">
+      <div class="source">Demo eats 3-4 min of the 10. Other 8 slides average ~45-60 sec each.</div>
+      <div>09 / 11</div>
+    </div>
+    <aside class="notes">
+      Print this slide. Tape it to your laptop during the meeting if you have to.
+
+      <em>"The demo is the moment everyone remembers. Slides 1-6 set it up. Slide 8 books the follow-up. The demo is the proof. Your only job during the demo is to NOT distract from it. Let it run. Let the MLR overlay land. Don't fill silence."</em>
+
+      <span class="step">Timing reality check</span>
+      If you're 5 minutes in and haven't reached the demo, cut something. The demo runs at minute 7 minimum. If you start the demo at minute 9 you've blown the meeting.
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 10 — If asked something you don't know ════════ -->
+  <section class="slide" data-role="main" data-title="If asked something you don't know">
+    <div class="meta-row">
+      <div class="left"><span class="dot"></span><span>The escape hatches</span></div>
+      <div>10 / 11</div>
+    </div>
+    <div class="eyebrow">It's OK not to know — it's not OK to fumble</div>
+    <h1 class="title">When you hit a question you can't answer, <em>say one of these.</em></h1>
+    <div class="body">
+      <div class="escape-list">
+        <div class="escape-quote">I want to give you a precise answer on that — let me get our <em>technical lead</em> on the follow-up call.</div>
+        <div class="escape-quote">That's exactly the kind of detail we'd work through in scope. Today's meeting is to <em>land the concept.</em></div>
+        <div class="escape-quote">Honestly, I'd rather not guess at that. Let me get back to you with a real answer <em>this week.</em></div>
+      </div>
+      <div class="escape-coda">The client trusts you <strong>more</strong> for saying you don't know than for fumbling. They've seen confident-and-wrong before. Be the confident-and-honest one.</div>
+    </div>
+    <div class="footer-row">
+      <div class="source">Pick one in the moment. Don't string two together — that sounds evasive.</div>
+      <div>10 / 11</div>
+    </div>
+    <aside class="notes">
+      Train this with role-play: hit the team with hard questions and have them deliver one of these three lines without hesitation.
+
+      <em>"The reason this works is that pharma execs deal with internal IT and consultants who BS them constantly. Saying 'I don't know, let me get you a real answer' breaks pattern. It's almost disarming. Use it."</em>
+
+      <span class="step">What NOT to do</span>
+      Don't apologize repeatedly. One escape hatch. One follow-up commitment. Move on.
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 11 — CLOSE ════════ -->
+  <section class="slide" data-role="close" data-title="Close">
+    <div class="meta-row">
+      <div class="left"><span class="dot"></span><span>The bottom line</span></div>
+      <div>11 / 11</div>
+    </div>
+    <div class="close-block">
+      <div class="punchline">The demo is the persuasion. Your job is to <em>set it up well</em> and <em>not screw up</em> the WebMCP framing.</div>
+      <div class="links">
+        <div class="link-item">
+          Main client deck
+          <span class="url"><a href="../">dlomibao.github.io/webmcp-pharma-pitch</a></span>
+        </div>
+        <div class="link-item">
+          Press P inside the deck
+          <span class="url">to open the same primers in-line</span>
+        </div>
+      </div>
+    </div>
+    <div class="footer-row">
+      <div class="source">Now go win the meeting.</div>
+      <div>11 / 11</div>
+    </div>
+    <aside class="notes">
+      Close the training session here. Don't add a "questions?" beat — invite questions verbally.
+
+      <em>"That's the floor. If anyone wants to walk through the deck end-to-end together, find me before the meeting."</em>
+    </aside>
+  </section>
+
+</div>
+
+<!-- Speaker notes overlay -->
+<div class="notes-overlay" id="notesOverlay">
+  <div class="notes-meta">
+    <span id="notesSlideNum">Slide</span>
+    <span>Press <kbd>S</kbd> to close</span>
+  </div>
+  <h2 id="notesTitle"></h2>
+  <div class="notes-body" id="notesBody"></div>
+</div>
+
+<!-- Help row -->
+<div class="help-overlay" id="helpRow">
+  <span><kbd>←</kbd><kbd>→</kbd> Navigate</span>
+  <span><kbd>S</kbd> Speaker notes</span>
+  <span><kbd>F</kbd> Fullscreen</span>
+</div>
+
+<script>
+  (function () {
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const total = slides.length;
+    const progressFill = document.getElementById('progressFill');
+    const notesOverlay = document.getElementById('notesOverlay');
+    const notesTitle = document.getElementById('notesTitle');
+    const notesBody = document.getElementById('notesBody');
+    const notesSlideNum = document.getElementById('notesSlideNum');
+    const helpRow = document.getElementById('helpRow');
+
+    const DESIGN_W = 1920, DESIGN_H = 1080;
+    function applyScale() {
+      const scale = Math.min(window.innerWidth / DESIGN_W, window.innerHeight / DESIGN_H);
+      document.documentElement.style.setProperty('--deck-scale', scale);
+    }
+    applyScale();
+    window.addEventListener('resize', applyScale);
+    document.addEventListener('fullscreenchange', applyScale);
+
+    let current = 0;
+    let notesVisible = false;
+
+    function parseHash() {
+      const m = location.hash.match(/^#(\d+)$/);
+      if (m) {
+        const n = parseInt(m[1], 10) - 1;
+        if (n >= 0 && n < total) return n;
+      }
+      return 0;
+    }
+    function render() {
+      slides.forEach((s, i) => s.classList.toggle('active', i === current));
+      progressFill.style.width = ((current + 1) / total * 100) + '%';
+      location.hash = '#' + (current + 1);
+      if (notesVisible) renderNotes();
+    }
+    function renderNotes() {
+      const slide = slides[current];
+      const aside = slide.querySelector('aside.notes');
+      notesTitle.textContent = slide.dataset.title || ('Slide ' + (current + 1));
+      notesSlideNum.textContent = 'Slide ' + (current + 1) + ' / ' + total + ' — Speaker notes';
+      notesBody.innerHTML = aside ? aside.innerHTML : '<p><em>No notes for this slide.</em></p>';
+    }
+    function next() { if (current < total - 1) { current++; render(); } }
+    function prev() { if (current > 0) { current--; render(); } }
+    function goto(n) { if (n >= 0 && n < total) { current = n; render(); } }
+    function toggleNotes() {
+      notesVisible = !notesVisible;
+      notesOverlay.classList.toggle('visible', notesVisible);
+      if (notesVisible) renderNotes();
+    }
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+      else document.exitFullscreen().catch(()=>{});
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && notesVisible) { toggleNotes(); return; }
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); next(); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+      else if (e.key === 's' || e.key === 'S') { toggleNotes(); }
+      else if (e.key === 'f' || e.key === 'F') { toggleFullscreen(); }
+      else if (e.key === 'Home') { goto(0); }
+      else if (e.key === 'End') { goto(total - 1); }
+    });
+
+    window.addEventListener('hashchange', () => {
+      const n = parseHash();
+      if (n !== current) { current = n; render(); }
+    });
+
+    setTimeout(() => helpRow.classList.add('faded'), 4000);
+    document.addEventListener('mousemove', () => {
+      helpRow.classList.remove('faded');
+      clearTimeout(window._helpFadeTimer);
+      window._helpFadeTimer = setTimeout(() => helpRow.classList.add('faded'), 3000);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (notesVisible) return;
+      if (e.target.closest('a')) return;
+      const x = e.clientX / window.innerWidth;
+      if (x < 0.3) prev();
+      else next();
+    });
+
+    current = parseHash();
+    render();
+  })();
+</script>
+
+</body>
+</html>

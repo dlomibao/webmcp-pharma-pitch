@@ -2,9 +2,11 @@
 
 A demo-driven pitch package for selling **WebMCP adoption** to pharma brands through ad-agency account teams.
 
-## Live deck
+## Live decks
 
-**👉 [View the 10-minute deck](https://dlomibao.github.io/webmcp-pharma-pitch/)**
+**👉 [Client-facing 10-minute deck](https://dlomibao.github.io/webmcp-pharma-pitch/)** — what you present to the pharma client. Press **P** inside to open the embedded primers.
+
+**👉 [Team primer deck (internal training)](https://dlomibao.github.io/webmcp-pharma-pitch/team-primer-deck/)** — 11-slide training deck for your sellers *before* they walk into the client meeting. Same content as `team-primer.md`, formatted as slides for live walk-through.
 
 Controls: `←` / `→` to navigate · `S` for speaker notes · `F` for fullscreen · `#N` to deep-link to slide N.
 
