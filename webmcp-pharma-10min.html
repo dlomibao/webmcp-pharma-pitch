@@ -403,31 +403,107 @@
     line-height: 1.5;
   }
 
-  /* Inline metaphor card on WebMCP slide */
-  .metaphor {
-    margin-top: 28px;
-    padding: 24px 28px;
-    background: var(--paper);
-    border: 1px solid var(--rule);
+  /* WebMCP slide — 2-col grid: "what it is" + "who does what" */
+  .webmcp-grid {
     display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 20px;
-    align-items: center;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--rule);
+    flex: 1;
+    min-height: 0;
   }
-  .metaphor .icon {
-    font-family: var(--fs-display);
-    font-size: 38px;
+  .webmcp-col {
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .webmcp-col:first-child {
+    border-right: 1px solid var(--rule);
+  }
+  .webmcp-col .col-h {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
     color: var(--coral-dark);
+    margin-bottom: 0;
+  }
+  .metaphor-tight {
+    background: var(--paper);
+    padding: 18px 22px;
+  }
+  .metaphor-tight p {
+    font-family: var(--fs-display);
     font-style: italic;
-    line-height: 1;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.4;
+    color: var(--brand);
   }
-  .metaphor p {
-    font-size: 16.5px;
+  .metaphor-tight p strong {
+    font-style: normal;
+    font-weight: 600;
+  }
+  .webmcp-bullets {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .webmcp-bullets li {
+    font-size: 15.5px;
+    line-height: 1.5;
     color: var(--ink);
-    line-height: 1.55;
-    max-width: 70ch;
+    padding-left: 22px;
+    position: relative;
   }
-  .metaphor p strong { color: var(--brand); font-weight: 600; }
+  .webmcp-bullets li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--coral-dark);
+    font-family: var(--fs-display);
+    font-style: italic;
+  }
+  .who-row {
+    display: grid;
+    grid-template-columns: 132px 1fr;
+    gap: 18px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .who-row:last-child { border-bottom: 0; }
+  .who-row .who-label {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding-top: 4px;
+    color: var(--ink-muted);
+  }
+  .who-row .who-detail {
+    font-size: 15.5px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .who-row.primary {
+    background: var(--brand);
+    padding: 20px 18px;
+    border-bottom: 0;
+    margin: 4px -8px;
+  }
+  .who-row.primary .who-label {
+    color: #FFD580;
+    font-weight: 700;
+  }
+  .who-row.primary .who-detail {
+    color: var(--cream);
+    font-family: var(--fs-display);
+    font-style: italic;
+    font-size: 18px;
+    line-height: 1.45;
+  }
 
   /* ───────── MLR table ───────── */
   .mlr-table {
@@ -1038,32 +1114,36 @@
       </div>
     </div>
 
-    <div class="eyebrow">Introducing</div>
-    <h1 class="title wide">WebMCP. Think of it as a <em>menu</em> your website hands the AI.</h1>
+    <div class="eyebrow">In plain English</div>
+    <h1 class="title wide">WebMCP. This is content work — <em>not</em> infrastructure.</h1>
 
     <div class="body">
-      <div class="metaphor">
-        <div class="icon">"</div>
-        <p>Today, the AI walks into your website like a stranger and tries to read whatever it finds. <strong>WebMCP lets your website hand the AI a printed menu</strong> — "here are the questions I'll answer, and here's the exact answer for each one." The AI orders from the menu. Your website serves the answer. Same dish, every time.</p>
-      </div>
+      <div class="webmcp-grid">
+        <div class="webmcp-col">
+          <h3 class="col-h">What it actually is</h3>
+          <div class="metaphor-tight">
+            <p>Your website hands every AI assistant a <strong>menu of questions it can answer</strong> — with the exact, MLR-approved answer for each.</p>
+          </div>
+          <ul class="webmcp-bullets">
+            <li>Same family as schema.org tags, OpenGraph snippets, and ALT text — structured content for machines, written by the same teams that already write your other content.</li>
+            <li>Not a chatbot. Not a new website. Not an IT project.</li>
+            <li>Built by Google + Microsoft at the W3C. Live in Chrome's early-preview channel today.</li>
+          </ul>
+        </div>
 
-      <div class="explain-rows">
-        <div class="explain-row">
-          <div class="k">What it is</div>
-          <div class="v">A new web standard.
-            <span class="small">A small, agreed-upon way for any website to publish a list of "things AI can ask me about" — and the approved answer for each.</span>
+        <div class="webmcp-col">
+          <h3 class="col-h">Who does what</h3>
+          <div class="who-row">
+            <div class="who-label">Brand IT</div>
+            <div class="who-detail">One URL on your existing site. A few hours of plumbing.</div>
           </div>
-        </div>
-        <div class="explain-row">
-          <div class="k">Who built it</div>
-          <div class="v">Google + Microsoft, through the W3C.
-            <span class="small">Co-authored, openly published. Same group that defines how the web works.</span>
+          <div class="who-row primary">
+            <div class="who-label">Your agency</div>
+            <div class="who-detail">Decides which questions to publish. Writes the MLR-approved answers. Owns the cycle. Updates as new data lands.</div>
           </div>
-        </div>
-        <div class="explain-row">
-          <div class="k">Where it lives</div>
-          <div class="v">In Chrome — early preview, March 2026.
-            <span class="small">Honest framing: it shipped in Chrome's early-preview channel, not the stable browser yet. Microsoft co-authoring means Edge follows. This is the moment to be early — not late.</span>
+          <div class="who-row">
+            <div class="who-label">AI assistants</div>
+            <div class="who-detail">Read what you publish. Quote it. Cite your brand.</div>
           </div>
         </div>
       </div>
@@ -1075,15 +1155,25 @@
     </div>
 
     <aside class="notes">
-      <em>"WebMCP stands for Web Model Context Protocol. Don't worry about the name. Here's the only thing that matters."</em>
-      <em>"Today, when an AI looks at your website, it's like a stranger walking into a restaurant kitchen and trying to figure out what to cook. WebMCP gives the AI a menu. Your website says: 'here are the questions I'll answer — dosing, interactions, side effects — and here's exactly what to say for each one.' The AI orders from the menu and serves your answer."</em>
-      <em>"Three honest things to know. Google and Microsoft co-built it. It's brand new — it shipped in Chrome's early preview last month. And it's NOT a chatbot. There's nothing to buy. It bolts onto the site you already have."</em>
+      <strong>The single most important slide. Read this one carefully — your team needs to deliver this without confusion.</strong>
 
-      <span class="step">If asked: "When will other browsers support it?"</span>
-      Microsoft co-authored the spec, so Edge is highly likely. Apple and Mozilla haven't said yet. Even Chrome-only is roughly two-thirds of the US browser market today.
+      <em>"Here's the only thing you need to remember about WebMCP. It is content work — same kind of thing your agency already does for the brand. Schema.org tags. OpenGraph snippets. The ALT text on your images. All that structured-content work? WebMCP is in that family. The audience is just new — it's AI assistants now, not search crawlers."</em>
 
-      <span class="step">If asked: "Is this a real standard or a beta?"</span>
-      Both. It's a published W3C draft from a real working group. It's also early. That's exactly what the opportunity window looks like.
+      <em>"Today, when an AI looks at your website, it's like a stranger walking into your kitchen and trying to cook. WebMCP lets your website hand the AI a printed menu — 'here are the questions I'll answer, here's exactly what to say.' The AI orders. Your website serves. Same dish, every time."</em>
+
+      <em>"Look at the right side of the slide. Three players. Your brand IT does a few hours of plumbing — one URL on the website you already have. Your AGENCY — that's us — does the real work. We decide what questions to publish. We write the answers. We walk them through MLR. We own the calendar. Just like every other content cycle. The AI assistants — ChatGPT, Gemini, Claude — they're the consumers. They read what we publish, and they cite your brand."</em>
+
+      <span class="step">If anyone says "wait, isn't MCP a backend thing?"</span>
+      This is the most common confusion — handle it directly. <em>"Great question. MCP — without the 'web' — is a different protocol used by AI applications to connect to internal data systems. That's backend infrastructure. WebMCP is the opposite direction — it's the public-facing content layer on your website. Same naming family, totally different scope. Don't worry too much about the distinction. What matters is: this one is content, not infrastructure. Your agency owns it."</em>
+
+      <span class="step">If asked "isn't this just an API?"</span>
+      <em>"In the technical sense, yes. But for your team it works exactly like any other content workflow — you're writing approved answers and publishing them. The technical wiring is a few hours of one-time setup. Everything that matters happens in your existing MLR cycle."</em>
+
+      <span class="step">If asked "When will other browsers support it?"</span>
+      Microsoft co-authored the spec, so Edge is highly likely. Apple and Mozilla haven't announced. Even Chrome-only is roughly two-thirds of the US browser market today.
+
+      <span class="step">If asked "Is this a real standard or a beta?"</span>
+      Both. Published W3C draft from a real working group. Available in Chrome's early-preview channel today. The opportunity window IS the early period — brands that publish first become the default citation for their therapy class.
     </aside>
   </section>
 
@@ -1404,6 +1494,38 @@
 
     <aside class="notes">
       The "wait and see" objection feels safe but is the most expensive choice. Use the historical pattern — the room will recognize at least one of those examples. Don't get drawn into citing exact share-shift numbers; the pattern is what's persuasive.
+    </aside>
+  </section>
+
+  <!-- ════════ B6 — WebMCP vs MCP ════════ -->
+  <section class="slide" data-role="appendix" data-title="B6 — WebMCP vs MCP">
+    <div class="meta-row">
+      <div class="left">
+        <span>Q6 · The naming confusion</span>
+      </div>
+    </div>
+
+    <div class="qa-question">"Wait — is this the MCP I've heard of? The backend thing?"</div>
+
+    <div class="qa-answer">
+      <p><span class="key">Short answer</span>
+      Different things. Same naming family. Opposite directions.</p>
+
+      <p><span class="key">MCP (Model Context Protocol)</span>
+      A protocol that AI applications use to <strong>pull data inward</strong> — connecting an AI app to internal databases, internal tools, internal documents. <strong>Backend infrastructure</strong> built and run by IT/engineering teams.</p>
+
+      <p><span class="key">WebMCP (Web Model Context Protocol)</span>
+      The same naming family, applied at the browser. Lets a public website <strong>publish content outward</strong> — declaring "here's what I'll answer, and here's the answer." <strong>Public-facing content</strong> built and owned by the agency / brand team that already runs the site.</p>
+
+      <p><span class="key">The one-line distinction to remember</span>
+      <strong>MCP pulls private data in. WebMCP publishes public content out. They share a name because they share design principles — they don't share scope, owners, or budget.</strong></p>
+    </div>
+
+    <aside class="notes">
+      Most common confusion in any room. The trap: someone hears "MCP" and assumes IT scope, derails the meeting into "let's get our engineering team involved." Head it off proactively if the team or client looks puzzled at the WebMCP slide.
+
+      <span class="step">Quick sentence to deploy</span>
+      <em>"Common confusion — they share a name because they share principles, but MCP is your backend, WebMCP is your front door. This conversation is only about the front door."</em>
     </aside>
   </section>
 

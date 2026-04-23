@@ -17,6 +17,8 @@ Controls: `←` / `→` to navigate · `S` for speaker notes · `F` for fullscre
 | `webmcp-pharma-10min-bundled.html` | Same as `index.html` — the distributable single-file build |
 | `webmcp-veritrax-demo.html` | The standalone interactive demo (3-pane Veritrax scenario) |
 | `webmcp-pharma-deck-content.md` | The 12-slide content document for the longer ~30-min pitch |
+| `team-primer.md` | **Internal-only.** 5-min read for the agency team *before* they walk into a meeting — handles the WebMCP/MCP confusion, what to say if derailed |
+| `client-primer.md` | **Shareable.** Plain-English primer for clients — sendable as a leave-behind or pre-read |
 | `bundle.mjs` | Build script — merges the demo into the deck via `srcdoc` |
 | `CLAUDE.md` | Project handoff document (read this first if extending) |
 
