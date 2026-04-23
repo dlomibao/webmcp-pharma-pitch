@@ -7,38 +7,40 @@ const outPath  = 'webmcp-pharma-10min-bundled.html';
 const demoRaw = readFileSync(demoPath, 'utf8');
 const deckRaw = readFileSync(deckPath, 'utf8');
 
-// Escape sequences that would break out of a <script type="text/html"> block.
-const demoEscaped = demoRaw
-  .replace(/<\/script>/gi, '<\\/script>')
-  .replace(/<!--/g, '<\\!--');
+// Base64-encode the demo. This sidesteps every HTML/JS escaping pitfall —
+// the encoded blob has no <, >, /, or quote characters at all, so it can
+// be embedded inside any markup or string literal without conflict.
+const demoB64 = Buffer.from(demoRaw, 'utf8').toString('base64');
 
-// Find the iframe in the demo slide and replace it with our embed shell.
 const iframeRegex = /<iframe\s+src="webmcp-veritrax-demo\.html"[^>]*><\/iframe>/i;
 if (!iframeRegex.test(deckRaw)) {
   console.error('ERROR: could not find demo iframe in deck — abort.');
   process.exit(1);
 }
 
-const replacement = `<iframe id="demoFrame" title="WebMCP Veritrax demo" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>`;
+const replacement = `<iframe id="demoFrame" title="WebMCP Veritrax demo" loading="lazy"></iframe>`;
 let merged = deckRaw.replace(iframeRegex, replacement);
 
-// Inject the demo source as a non-executing script block + a bootstrap script
-// just before </body>. The bootstrap injects the demo into the iframe via
-// srcdoc the first time the demo slide becomes visible.
+// Loader injects the decoded demo HTML into the iframe via srcdoc the first
+// time the demo slide becomes visible.
 const bootstrap = `
-<script type="text/html" id="demoSrc">${demoEscaped}</script>
 <script>
   (function () {
+    const DEMO_B64 = "${demoB64}";
     let loaded = false;
     function loadDemo() {
       if (loaded) return;
       const frame = document.getElementById('demoFrame');
-      const src = document.getElementById('demoSrc');
-      if (!frame || !src) return;
-      frame.srcdoc = src.textContent;
+      if (!frame) return;
+      // Decode base64 → UTF-8 string. atob returns binary string; we round-trip
+      // through TextDecoder to handle multi-byte characters correctly.
+      const bin = atob(DEMO_B64);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      const html = new TextDecoder('utf-8').decode(bytes);
+      frame.srcdoc = html;
       loaded = true;
     }
-    // Load when demo slide becomes active. Watch for class change on the slide.
     const demoSlide = document.querySelector('.slide[data-role="demo"]');
     if (demoSlide) {
       const obs = new MutationObserver(() => {
