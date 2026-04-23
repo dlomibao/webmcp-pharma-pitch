@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebMCP Demo · Veritrax</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand: #0F3D3E;
+    --brand-dark: #092728;
+    --brand-mid: #1F5556;
+    --cream: #FAF6ED;
+    --cream-dark: #F2ECDD;
+    --coral: #E27B58;
+    --coral-dark: #C5624A;
+    --warn: #B53227;
+    --warn-bg: #FBE4DF;
+    --ink: #1A2828;
+    --ink-muted: #5A6868;
+
+    --term-bg: #0A0E14;
+    --term-elev: #131820;
+    --term-border: #1F2630;
+    --term-text: #C9CDD2;
+    --term-dim: #5F6B78;
+    --term-green: #B5E8A1;
+    --term-cyan: #7FDBFF;
+    --term-red: #FF6B6B;
+    --term-yellow: #FFD580;
+    --term-magenta: #D5A3F5;
+
+    --mcp-bg: #14171C;
+    --mcp-elev: #1D2128;
+    --mcp-border: #2A303B;
+    --mcp-text: #D4D8DE;
+    --mcp-dim: #6A7280;
+    --mcp-accent: #7FDBFF;
+    --mcp-ok: #95E08E;
+    --mcp-warn: #FFD580;
+    --mcp-err: #FF6B6B;
+
+    --srch-bg: #FDFCF8;
+    --srch-bg-2: #F5F3EC;
+    --srch-border: #E4E1D7;
+    --srch-ink: #1A1F1F;
+    --srch-muted: #6B7572;
+    --srch-accent: #4A5FD1;
+    --srch-ai: #6E4AD1;
+  }
+
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    background: var(--term-bg);
+    color: var(--term-text);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app { display: grid; grid-template-rows: 56px 1fr; height: 100vh; }
+
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px;
+    background: linear-gradient(to bottom, #12171F, var(--term-bg));
+    border-bottom: 1px solid var(--term-border);
+  }
+  .brand-block {
+    display: flex; align-items: center; gap: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--term-text);
+  }
+  .brand-block .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--mcp-ok);
+    box-shadow: 0 0 10px var(--mcp-ok), 0 0 2px var(--mcp-ok);
+    animation: statusPulse 2.2s infinite;
+  }
+  .brand-block .sep { width: 1px; height: 16px; background: var(--term-border); }
+  .brand-block .faint { color: var(--term-dim); }
+  @keyframes statusPulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+
+  .controls { display: flex; gap: 12px; align-items: center; }
+
+  .speed-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--term-dim);
+  }
+  .sp-buttons {
+    display: inline-flex;
+    background: var(--term-elev);
+    border: 1px solid var(--term-border);
+    border-radius: 4px;
+    padding: 2px;
+    gap: 2px;
+  }
+  .sp-buttons button {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 500;
+    padding: 5px 10px;
+    min-width: 34px;
+    background: transparent;
+    border: none;
+    color: var(--term-dim);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all .2s;
+  }
+  .sp-buttons button:hover { color: var(--term-text); }
+  .sp-buttons button.active {
+    background: var(--term-bg);
+    color: var(--mcp-accent);
+    box-shadow: inset 0 0 0 1px rgba(127,219,255,0.25);
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px;
+    background: var(--term-elev);
+    border: 1px solid var(--term-border);
+    color: var(--term-text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase;
+    border-radius: 4px; cursor: pointer;
+    transition: all .2s ease;
+  }
+  .btn:hover { border-color: var(--mcp-accent); color: var(--mcp-accent); }
+  .btn[disabled] { opacity: .45; cursor: not-allowed; }
+  .btn svg { width: 12px; height: 12px; }
+
+  .columns {
+    display: grid;
+    grid-template-columns: minmax(360px, 1.05fr) minmax(300px, 0.9fr) minmax(420px, 1.55fr);
+    height: 100%;
+    overflow: hidden;
+  }
+  .pane {
+    display: flex; flex-direction: column; overflow: hidden;
+    border-right: 1px solid var(--term-border);
+  }
+  .pane:last-child { border-right: none; }
+
+  .pane-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px;
+    background: var(--term-elev);
+    border-bottom: 1px solid var(--term-border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--mcp-dim);
+    flex-shrink: 0;
+  }
+  .pane-head .tag {
+    margin-left: auto;
+    padding: 2px 7px;
+    font-size: 9px; letter-spacing: 0.1em;
+    background: var(--term-border); color: var(--term-dim);
+    border-radius: 2px;
+  }
+
+  /* View tabs in pane header */
+  .view-tabs {
+    display: inline-flex;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--term-border);
+    border-radius: 4px;
+    padding: 2px; gap: 2px;
+  }
+  .view-tabs button {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 5px 10px;
+    background: transparent; border: none; color: var(--mcp-dim);
+    cursor: pointer; border-radius: 2px;
+    transition: all .2s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .view-tabs button:hover { color: var(--term-text); }
+  .view-tabs button.active {
+    background: var(--term-bg);
+    color: var(--mcp-accent);
+    box-shadow: inset 0 0 0 1px rgba(127,219,255,0.25);
+  }
+  .view-tabs button .tab-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: currentColor;
+  }
+
+  .view { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  .view[hidden] { display: none; }
+
+  /* ===== TERMINAL ===== */
+  .terminal {
+    flex: 1; overflow-y: auto;
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.25px; line-height: 1.62;
+    background:
+      radial-gradient(ellipse at top left, rgba(127,219,255,0.03), transparent 50%),
+      var(--term-bg);
+  }
+  .terminal::-webkit-scrollbar { width: 8px; }
+  .terminal::-webkit-scrollbar-track { background: var(--term-bg); }
+  .terminal::-webkit-scrollbar-thumb { background: var(--term-border); border-radius: 4px; }
+
+  .line { display: block; white-space: pre-wrap; word-break: break-word; margin-bottom: 2px; }
+  .sys     { color: var(--term-dim); }
+  .sys .ok { color: var(--mcp-ok); }
+  .prompt  { color: var(--term-green); font-weight: 500; }
+  .user    { color: var(--term-text); }
+  .agent-label { color: var(--term-magenta); font-weight: 600; }
+  .agent   { color: var(--term-text); }
+  .tool-head     { color: var(--term-cyan); font-weight: 500; }
+  .tool-arg      { color: var(--term-dim); }
+  .tool-arg .val { color: var(--term-yellow); }
+  .tool-ok       { color: var(--mcp-ok); }
+  .tool-warn     { color: var(--term-red); font-weight: 600; }
+  .thinking { color: var(--term-dim); font-style: italic; }
+  .divider  { color: var(--term-border); letter-spacing: -1px; }
+  .agent-box {
+    display: block; margin: 6px 0 10px; padding: 10px 12px;
+    border-left: 2px solid var(--term-magenta);
+    background: rgba(213,163,245,0.05);
+    color: var(--term-text);
+  }
+  .agent-box.warn {
+    border-left-color: var(--term-red);
+    background: rgba(255,107,107,0.06);
+  }
+  .cursor {
+    display: inline-block;
+    width: 7px; height: 14px;
+    background: var(--term-green);
+    vertical-align: text-bottom;
+    margin-left: 2px;
+    animation: blink 1s steps(2) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ===== SEARCH VIEW ===== */
+  .search-view {
+    flex: 1; overflow-y: auto;
+    background: var(--srch-bg);
+    color: var(--srch-ink);
+    font-family: 'Inter Tight', sans-serif;
+    padding: 20px 22px 32px;
+  }
+  .search-view::-webkit-scrollbar { width: 8px; }
+  .search-view::-webkit-scrollbar-track { background: var(--srch-bg-2); }
+  .search-view::-webkit-scrollbar-thumb { background: var(--srch-border); border-radius: 4px; }
+
+  .srch-brand {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 16px;
+    color: var(--srch-ink);
+  }
+  .srch-brand .logo {
+    font-family: 'Fraunces', serif;
+    font-style: italic; font-weight: 500;
+    font-size: 20px; letter-spacing: -0.02em;
+  }
+  .srch-brand .logo b {
+    font-style: normal; font-weight: 600;
+    color: var(--srch-accent);
+  }
+
+  .srch-bar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 13px 16px;
+    background: #fff;
+    border: 1px solid var(--srch-border);
+    border-radius: 26px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02), 0 8px 24px -12px rgba(0,0,0,0.08);
+    transition: box-shadow .3s, border-color .3s;
+    margin-bottom: 22px;
+  }
+  .srch-bar.focused {
+    border-color: var(--srch-accent);
+    box-shadow: 0 0 0 3px rgba(74,95,209,0.12), 0 8px 24px -12px rgba(0,0,0,0.12);
+  }
+  .srch-bar svg { width: 16px; height: 16px; color: var(--srch-muted); flex-shrink: 0; }
+  .srch-input {
+    flex: 1;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 15px; color: var(--srch-ink);
+    min-height: 18px; display: inline-block;
+  }
+  .srch-input .cur {
+    display: inline-block;
+    width: 1.5px; height: 16px;
+    background: var(--srch-accent);
+    margin-left: 1px; vertical-align: middle;
+    animation: blinkCur 1s steps(2) infinite;
+  }
+  @keyframes blinkCur { 50% { opacity: 0; } }
+  .srch-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--srch-muted);
+    padding: 3px 7px;
+    border: 1px solid var(--srch-border);
+    border-radius: 3px;
+    background: var(--srch-bg);
+  }
+
+  .ai-card {
+    opacity: 0; transform: translateY(6px);
+    transition: opacity .4s ease, transform .4s ease;
+    margin-bottom: 20px;
+  }
+  .ai-card.show { opacity: 1; transform: translateY(0); }
+
+  .ai-card-inner {
+    background: #fff;
+    border: 1px solid var(--srch-border);
+    border-radius: 14px;
+    padding: 18px 18px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ai-card-inner::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--srch-accent) 0%, var(--srch-ai) 45%, var(--coral) 100%);
+  }
+
+  .ai-head {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--srch-muted);
+  }
+  .ai-head .sparkle {
+    font-family: 'Fraunces', serif;
+    color: var(--srch-ai);
+    font-size: 16px; line-height: 1; margin-top: -2px;
+  }
+  .ai-head .title {
+    color: var(--srch-ink);
+    letter-spacing: 0.14em; font-weight: 500;
+  }
+  .ai-head .status {
+    margin-left: auto;
+    display: flex; align-items: center; gap: 5px;
+    color: var(--srch-muted);
+    font-size: 9px; letter-spacing: 0.1em;
+  }
+  .ai-head .status .d {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--srch-ai);
+    animation: statusPulse 1.4s infinite;
+  }
+  .ai-head .status.done .d { background: #5AB870; animation: none; }
+  .ai-head .status.warn .d { background: var(--warn); animation: none; }
+
+  .ai-thinking {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 0 2px;
+    font-size: 13px; color: var(--srch-muted);
+    font-style: italic;
+  }
+  .ai-thinking .dots { display: inline-flex; gap: 3px; }
+  .ai-thinking .dots span {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--srch-ai);
+    animation: thinkDot 1.2s infinite ease-in-out;
+  }
+  .ai-thinking .dots span:nth-child(2) { animation-delay: .15s; }
+  .ai-thinking .dots span:nth-child(3) { animation-delay: .3s; }
+  @keyframes thinkDot {
+    0%, 80%, 100% { transform: scale(0.5); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  .ai-activity {
+    display: flex; flex-direction: column; gap: 4px;
+    margin-top: 8px;
+    padding: 10px 11px;
+    background: var(--srch-bg-2);
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; color: var(--srch-muted);
+  }
+  .ai-activity .line { margin: 0; line-height: 1.5; }
+  .ai-activity .ok { color: var(--srch-accent); }
+  .ai-activity .w  { color: var(--warn); font-weight: 600; }
+  .ai-activity .fn { color: var(--srch-ai); font-weight: 500; }
+
+  .ai-body {
+    font-size: 14.5px; line-height: 1.62;
+    color: var(--srch-ink);
+    padding-top: 4px;
+  }
+  .ai-body p {
+    margin-bottom: 10px;
+    opacity: 0; transform: translateY(4px);
+    transition: opacity .4s ease, transform .4s ease;
+  }
+  .ai-body p.in { opacity: 1; transform: translateY(0); }
+  .ai-body p:last-child { margin-bottom: 0; }
+  .ai-body b { font-weight: 600; color: var(--srch-ink); }
+  .ai-body .hl-warn {
+    background: rgba(181,50,39,0.1);
+    color: var(--warn);
+    padding: 0 4px; border-radius: 2px;
+    font-weight: 600;
+  }
+  .ai-body .ref {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    background: var(--srch-bg-2);
+    color: var(--srch-accent);
+    padding: 1px 5px;
+    border-radius: 3px;
+    vertical-align: super;
+    margin-left: 1px; cursor: pointer;
+  }
+
+  .ai-warn-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 9px;
+    background: var(--warn-bg);
+    color: var(--warn);
+    border: 1px solid rgba(181,50,39,0.25);
+    border-radius: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase;
+    font-weight: 600; margin-bottom: 10px;
+    opacity: 0; transform: translateY(-4px);
+    transition: all .4s ease;
+  }
+  .ai-warn-badge.in { opacity: 1; transform: translateY(0); }
+  .ai-warn-badge .ic {
+    width: 14px; height: 14px;
+    background: var(--warn);
+    color: #fff;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 10px;
+  }
+
+  .ai-sources {
+    border-top: 1px solid var(--srch-border);
+    margin-top: 14px; padding-top: 12px;
+  }
+  .ai-sources .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--srch-muted); margin-bottom: 8px;
+  }
+  .ai-sources .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .ai-sources .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 10px;
+    background: var(--srch-bg-2);
+    border: 1px solid var(--srch-border);
+    border-radius: 20px;
+    font-size: 11.5px; color: var(--srch-ink);
+    opacity: 0; transform: translateY(4px);
+    transition: all .35s ease;
+    cursor: pointer;
+  }
+  .ai-sources .chip.in { opacity: 1; transform: translateY(0); }
+  .ai-sources .chip:hover { border-color: var(--srch-accent); }
+  .ai-sources .chip .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 600;
+    color: var(--srch-accent);
+    background: #fff;
+    border: 1px solid var(--srch-border);
+    border-radius: 50%;
+    width: 16px; height: 16px;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .ai-sources .chip .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 0.08em;
+    color: var(--srch-muted);
+    text-transform: uppercase;
+  }
+
+  .srch-result {
+    padding: 14px 0 0;
+    font-size: 13px; line-height: 1.45;
+    border-top: 1px solid var(--srch-border);
+    margin-top: 18px;
+    opacity: 0; transform: translateY(4px);
+    transition: all .4s ease;
+  }
+  .srch-result.in { opacity: 1; transform: translateY(0); }
+  .srch-result .url {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--srch-muted);
+    font-size: 11px; margin-bottom: 2px;
+  }
+  .srch-result .url .fav {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--brand); color: var(--cream);
+    font-family: 'Fraunces', serif; font-weight: 700;
+    font-size: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-style: italic;
+  }
+  .srch-result h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500; font-size: 18px;
+    color: var(--srch-accent);
+    line-height: 1.25;
+    margin: 2px 0 3px; cursor: pointer;
+  }
+  .srch-result h3:hover { text-decoration: underline; }
+  .srch-result .snippet { color: var(--srch-muted); font-size: 12.5px; }
+
+  /* ===== MCP PANEL ===== */
+  .mcp-panel {
+    flex: 1; overflow-y: auto;
+    padding: 14px;
+    background: linear-gradient(to bottom, var(--mcp-bg), #101318);
+    color: var(--mcp-text);
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .mcp-panel::-webkit-scrollbar { width: 8px; }
+  .mcp-panel::-webkit-scrollbar-track { background: var(--mcp-bg); }
+  .mcp-panel::-webkit-scrollbar-thumb { background: var(--mcp-border); border-radius: 4px; }
+
+  .mcp-intro {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; line-height: 1.7;
+    color: var(--mcp-dim);
+    padding: 10px 12px;
+    background: var(--mcp-elev);
+    border: 1px solid var(--mcp-border);
+    border-radius: 6px;
+  }
+  .mcp-intro .host { color: var(--mcp-accent); font-weight: 500; }
+  .mcp-intro .origin { color: var(--mcp-ok); }
+  .mcp-intro b { color: var(--mcp-text); font-weight: 500; }
+  .mcp-intro .client { color: var(--mcp-warn); font-weight: 500; transition: color .3s; }
+
+  /* MLR / integrity overlay — straddles panes, positioned over the running tool card */
+  .mcp-note-overlay {
+    position: fixed;
+    z-index: 100;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, rgba(29, 34, 43, 0.97), rgba(20, 23, 30, 0.97));
+    border: 1px solid rgba(226, 123, 88, 0.55);
+    border-radius: 10px;
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    box-shadow:
+      0 36px 90px -18px rgba(0, 0, 0, 0.78),
+      0 16px 42px -8px rgba(0, 0, 0, 0.55),
+      0 0 0 1px rgba(226, 123, 88, 0.18),
+      0 0 60px -10px rgba(226, 123, 88, 0.35);
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+    transition:
+      opacity .38s ease,
+      transform .5s cubic-bezier(0.2, 0.8, 0.2, 1),
+      top    .55s cubic-bezier(0.2, 0.8, 0.2, 1),
+      left   .55s cubic-bezier(0.2, 0.8, 0.2, 1),
+      width  .55s cubic-bezier(0.2, 0.8, 0.2, 1),
+      height .55s cubic-bezier(0.2, 0.8, 0.2, 1);
+    pointer-events: none;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 152px 1px 1fr;
+    gap: 18px;
+    align-items: center;
+  }
+  .mcp-note-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--coral) 20%, var(--coral) 80%, transparent);
+    opacity: 0.7;
+  }
+  .mcp-note-overlay::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(100deg, transparent 30%, rgba(226,123,88,0.12) 50%, transparent 70%);
+    transform: translateX(-120%);
+    pointer-events: none;
+  }
+  .mcp-note-overlay.is-active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+  .mcp-note-overlay.is-active::after { animation: noteShimmer 1.4s ease .3s; }
+  @keyframes noteShimmer {
+    0%   { transform: translateX(-120%); }
+    100% { transform: translateX(120%); }
+  }
+
+  .mcp-note-overlay .note-col {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+  .mcp-note-overlay .note-col-left { gap: 3px; }
+  .mcp-note-overlay .note-col .head {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--coral);
+    font-weight: 600;
+  }
+  .mcp-note-overlay .note-col .head .ico { font-size: 12px; }
+  .mcp-note-overlay .note-col .sub {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--mcp-text);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .mcp-note-overlay .note-col .live {
+    margin-top: 5px;
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--coral);
+  }
+  .mcp-note-overlay .note-col .live .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--coral);
+    box-shadow: 0 0 8px var(--coral);
+    animation: statusPulse 1.4s infinite;
+  }
+
+  .mcp-note-overlay .divider {
+    width: 1px;
+    height: 72%;
+    background: linear-gradient(to bottom, transparent, var(--mcp-border) 20%, var(--mcp-border) 80%, transparent);
+    align-self: center;
+  }
+
+  .mcp-note-overlay .note-col-right .headline {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.28;
+    color: var(--mcp-text);
+    margin-bottom: 8px;
+    letter-spacing: -0.015em;
+  }
+  .mcp-note-overlay .note-col-right .headline em {
+    font-style: italic;
+    color: var(--coral);
+    font-weight: 500;
+  }
+  .mcp-note-overlay .note-col-right .body {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.25px;
+    line-height: 1.55;
+    color: var(--mcp-dim);
+  }
+  .mcp-note-overlay .note-col-right .body b {
+    color: var(--mcp-text);
+    font-weight: 500;
+  }
+
+  @media (max-width: 1000px) {
+    .mcp-note-overlay {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .mcp-note-overlay .divider { display: none; }
+  }
+
+  .mcp-note-overlay .note-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--mcp-dim);
+    font-size: 18px;
+    line-height: 1;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 300;
+    cursor: pointer;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0 2px 0;
+    transition: all .2s;
+    z-index: 3;
+  }
+  .mcp-note-overlay .note-close:hover {
+    color: var(--coral);
+    border-color: rgba(226, 123, 88, 0.35);
+    background: rgba(226, 123, 88, 0.08);
+  }
+  .mcp-note-overlay.is-active .note-close { pointer-events: auto; }
+
+  .tool-card {
+    background: var(--mcp-elev);
+    border: 1px solid var(--mcp-border);
+    border-radius: 7px;
+    padding: 12px;
+    transition: all .35s ease;
+    position: relative; overflow: hidden;
+  }
+  .tool-card::after {
+    content:'';
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(127,219,255,0.1), transparent);
+    transform: translateX(-110%);
+    transition: transform .9s ease;
+    pointer-events: none;
+  }
+  .tool-card.running {
+    border-color: var(--mcp-accent);
+    box-shadow: 0 0 0 1px var(--mcp-accent), 0 0 24px rgba(127,219,255,0.22);
+  }
+  .tool-card.running::after { transform: translateX(110%); }
+  .tool-card.success  { border-color: rgba(149,224,142,0.55); }
+  .tool-card.warning  {
+    border-color: rgba(255,107,107,0.6);
+    background: linear-gradient(to right, rgba(255,107,107,0.07), var(--mcp-elev) 40%);
+  }
+
+  .tool-head-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .tool-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px; color: var(--mcp-text); font-weight: 500;
+  }
+  .tool-name .fn { color: var(--mcp-text); }
+  .tool-name .p { color: var(--mcp-dim); }
+  .tool-status {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--mcp-dim);
+    padding: 2px 7px;
+    border: 1px solid var(--mcp-border);
+    border-radius: 2px;
+  }
+  .tool-card.running .tool-status { color: var(--mcp-accent); border-color: var(--mcp-accent); }
+  .tool-card.success .tool-status { color: var(--mcp-ok); border-color: var(--mcp-ok); }
+  .tool-card.warning .tool-status { color: var(--mcp-err); border-color: var(--mcp-err); }
+  .tool-desc { font-size: 11px; color: var(--mcp-dim); line-height: 1.5; margin-bottom: 8px; }
+  .tool-schema {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.25px; line-height: 1.55;
+    color: var(--mcp-text);
+    background: rgba(0,0,0,0.28);
+    padding: 7px 9px; border-radius: 4px;
+    border: 1px solid var(--mcp-border);
+  }
+  .tool-schema .k { color: var(--term-cyan); }
+  .tool-schema .t { color: var(--term-yellow); }
+  .tool-schema .c { color: var(--mcp-dim); }
+
+  .tool-stat {
+    display: flex; justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    color: var(--mcp-dim);
+    letter-spacing: 0.05em;
+  }
+  .tool-stat .n { color: var(--mcp-text); }
+  .tool-stat .src {
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .tool-stat .src::before {
+    content: ''; display: inline-block;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--mcp-dim);
+  }
+  .tool-stat .src.console { color: #C3A5DF; }
+  .tool-stat .src.console::before { background: var(--term-magenta); }
+  .tool-stat .src.search { color: #B39EF5; }
+  .tool-stat .src.search::before { background: var(--srch-ai); box-shadow: 0 0 6px var(--srch-ai); }
+
+  /* ===== WEBSITE ===== */
+  .website {
+    flex: 1; overflow-y: auto;
+    background: var(--cream); color: var(--ink);
+    font-family: 'Inter Tight', sans-serif;
+    scroll-behavior: smooth;
+    position: relative;
+  }
+  .website::-webkit-scrollbar { width: 8px; }
+  .website::-webkit-scrollbar-track { background: var(--cream-dark); }
+  .website::-webkit-scrollbar-thumb { background: var(--brand); border-radius: 4px; }
+
+  .site-nav {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+    background: rgba(250,246,237,0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(15,61,62,0.1);
+  }
+  .site-logo {
+    font-family: 'Fraunces', serif;
+    font-weight: 500; font-style: italic;
+    font-size: 22px; letter-spacing: -0.02em;
+    color: var(--brand);
+  }
+  .site-logo .mark { font-style: normal; font-weight: 600; letter-spacing: -0.03em; }
+  .site-logo sup { font-size: 9px; color: var(--coral); margin-left: 1px; vertical-align: super; }
+  .site-nav-links {
+    display: flex; gap: 16px;
+    font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .site-nav-links a { color: var(--ink-muted); text-decoration: none; transition: color .2s; }
+  .site-nav-links a:hover { color: var(--brand); }
+
+  .mcp-badge {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--brand);
+    padding: 4px 8px;
+    border: 1px solid rgba(15,61,62,0.2);
+    border-radius: 2px;
+  }
+  .mcp-badge .bd {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--coral);
+    box-shadow: 0 0 6px var(--coral);
+    animation: statusPulse 2s infinite;
+  }
+
+  .sec {
+    padding: 34px 32px;
+    border-bottom: 1px solid rgba(15,61,62,0.08);
+    position: relative;
+    transition: background-color .6s ease;
+  }
+  .sec .accent {
+    position: absolute;
+    left: 0; top: 34px; bottom: 34px;
+    width: 3px; background: var(--coral);
+    transform: scaleY(0); transform-origin: top;
+    transition: transform .45s ease;
+  }
+  .sec.is-active { background: rgba(226,123,88,0.07); }
+  .sec.is-active .accent { transform: scaleY(1); }
+  .sec.pulse { animation: secPulse 1.1s ease; }
+  @keyframes secPulse {
+    0% { background: rgba(226,123,88,0); }
+    25% { background: rgba(226,123,88,0.28); }
+    100% { background: rgba(226,123,88,0.07); }
+  }
+  .mcp-ping {
+    position: absolute;
+    top: 16px; right: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--coral-dark);
+    display: flex; align-items: center; gap: 5px;
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .sec.is-active .mcp-ping { opacity: 1; }
+  .mcp-ping .pd { width: 5px; height: 5px; background: var(--coral); border-radius: 50%; animation: statusPulse 1.4s infinite; }
+
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--coral); margin-bottom: 10px;
+  }
+
+  .hero h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 300; font-size: 48px;
+    line-height: 0.98; letter-spacing: -0.035em;
+    color: var(--brand); margin-bottom: 14px;
+  }
+  .hero h1 em { font-style: italic; font-weight: 400; color: var(--coral); }
+  .hero .tagline {
+    font-family: 'Fraunces', serif;
+    font-style: italic; font-size: 18px;
+    color: var(--brand-mid);
+    margin-bottom: 18px; max-width: 95%; line-height: 1.3;
+  }
+  .hero-meta {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 6px 18px;
+    padding: 14px 0 0;
+    border-top: 1px solid rgba(15,61,62,0.15);
+    font-size: 12px;
+  }
+  .hero-meta dt {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-muted); margin-top: 8px;
+  }
+  .hero-meta dd { color: var(--ink); font-weight: 500; }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400; font-size: 26px;
+    letter-spacing: -0.02em;
+    color: var(--brand); margin-bottom: 16px;
+  }
+
+  .dose-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .dose-card {
+    padding: 14px 14px 13px;
+    background: white;
+    border: 1px solid rgba(15,61,62,0.12);
+    border-radius: 4px;
+  }
+  .dose-card .amt {
+    font-family: 'Fraunces', serif;
+    font-weight: 400; font-size: 32px; line-height: 1;
+    color: var(--brand); letter-spacing: -0.02em;
+  }
+  .dose-card .amt span { font-size: 14px; color: var(--ink-muted); margin-left: 3px; }
+  .dose-card .lb {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-muted); margin-top: 6px;
+  }
+  .dose-note { font-size: 12.5px; color: var(--ink-muted); line-height: 1.55; }
+
+  .warn-banner {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 13px 15px;
+    background: var(--warn); color: white;
+    border-radius: 4px;
+    margin-bottom: 14px;
+    opacity: 0; transform: translateY(-8px);
+    transition: all .5s ease;
+  }
+  .warn-banner.show { opacity: 1; transform: translateY(0); }
+  .warn-banner .ico {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700; font-size: 16px; line-height: 1;
+    padding: 3px 8px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .warn-banner .tx { font-size: 12.5px; line-height: 1.5; }
+  .warn-banner .tx b { font-weight: 600; }
+
+  .int-list { display: flex; flex-direction: column; gap: 8px; }
+  .int-row {
+    display: grid;
+    grid-template-columns: 86px 1fr;
+    gap: 12px;
+    padding: 12px 14px;
+    background: white;
+    border: 1px solid rgba(15,61,62,0.12);
+    border-radius: 4px;
+    align-items: start;
+  }
+  .int-row.severe {
+    border-color: var(--warn);
+    background: var(--warn-bg);
+    box-shadow: 0 0 0 1px var(--warn);
+  }
+  .int-row .sev {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 4px 6px; text-align: center;
+    background: var(--brand-mid); color: var(--cream);
+    border-radius: 2px; line-height: 1.2;
+  }
+  .int-row .sev.moderate { background: var(--coral); }
+  .int-row .sev.severe   { background: var(--warn); }
+  .int-row .body { font-size: 12.5px; line-height: 1.5; }
+  .int-row .body b { color: var(--brand); font-weight: 600; }
+  .int-row .body .drugs {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px; color: var(--ink-muted);
+    margin-top: 3px;
+  }
+  .int-row .body .detail { margin-top: 5px; font-size: 11.5px; color: var(--ink-muted); }
+
+  .se-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px 16px; font-size: 12.5px;
+  }
+  .se-grid .cat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--coral-dark); margin-bottom: 4px;
+  }
+  .se-grid ul { list-style: none; font-size: 12px; line-height: 1.65; color: var(--ink); }
+  .se-grid li::before { content: '—'; color: var(--ink-muted); margin-right: 6px; }
+
+  .footer {
+    padding: 22px 32px 28px;
+    font-size: 10.5px; line-height: 1.55;
+    color: var(--ink-muted);
+    background: var(--cream-dark);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.02em;
+  }
+  .footer .mock {
+    display: inline-block;
+    padding: 2px 6px;
+    background: var(--coral); color: white;
+    border-radius: 2px;
+    letter-spacing: 0.12em; font-size: 9px;
+    margin-bottom: 8px;
+  }
+
+  @media (max-width: 1000px) {
+    .columns {
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(3, minmax(280px, 1fr));
+      overflow-y: auto;
+    }
+    .pane { border-right: none; border-bottom: 1px solid var(--term-border); }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand-block">
+      <span class="dot"></span>
+      <span>webmcp-agent <span class="faint">v2.1.0</span></span>
+      <span class="sep"></span>
+      <span class="faint">connected · veritrax.com</span>
+    </div>
+    <div class="controls">
+      <div class="speed-control">
+        <span class="sp-label">Speed</span>
+        <div class="sp-buttons" id="speedButtons">
+          <button data-speed="1" class="active">1×</button>
+          <button data-speed="2">2×</button>
+          <button data-speed="4">4×</button>
+        </div>
+      </div>
+      <button class="btn" id="replay">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 11-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>
+        Replay
+      </button>
+    </div>
+  </div>
+
+  <div class="columns">
+
+    <!-- LEFT PANE: Console / Search toggle -->
+    <div class="pane">
+      <div class="pane-head">
+        <div class="view-tabs" id="viewTabs">
+          <button data-view="console" class="active">
+            <span class="tab-dot"></span>Console
+          </button>
+          <button data-view="search">
+            <span class="tab-dot"></span>AI Search
+          </button>
+        </div>
+        <span class="tag" id="viewTag">LIVE</span>
+      </div>
+
+      <div class="view" id="consoleView">
+        <div class="terminal" id="term"></div>
+      </div>
+
+      <div class="view" id="searchView" hidden>
+        <div class="search-view">
+          <div class="srch-brand">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="#4A5FD1" stroke-width="1.5"/>
+              <circle cx="12" cy="12" r="4" fill="#6E4AD1"/>
+            </svg>
+            <span class="logo">signal<b>.</b></span>
+          </div>
+
+          <div class="srch-bar" id="srchBar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <span class="srch-input" id="srchInput"></span>
+            <span class="srch-hint">⏎</span>
+          </div>
+
+          <div class="ai-card" id="aiCard">
+            <div class="ai-card-inner">
+              <div class="ai-head">
+                <span class="sparkle">✦</span>
+                <span class="title">AI Overview</span>
+                <span class="status" id="aiStatus"><span class="d"></span><span id="aiStatusText">Thinking</span></span>
+              </div>
+
+              <div class="ai-thinking" id="aiThinking" hidden>
+                Consulting veritrax.com via MCP
+                <span class="dots"><span></span><span></span><span></span></span>
+              </div>
+
+              <div class="ai-activity" id="aiActivity" hidden></div>
+
+              <div class="ai-warn-badge" id="aiWarnBadge">
+                <span class="ic">!</span>
+                Severe interaction detected
+              </div>
+
+              <div class="ai-body" id="aiBody"></div>
+
+              <div class="ai-sources" id="aiSources" hidden>
+                <div class="lbl">Sources · live from veritrax.com</div>
+                <div class="chips" id="aiChips"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="srch-result" id="srchResult">
+            <div class="url">
+              <span class="fav">V</span>
+              veritrax.com › drug-interactions
+            </div>
+            <h3>Drug Interactions · Veritrax<sup>®</sup> (veritraxib)</h3>
+            <div class="snippet">Strong CYP3A4 inhibitors are contraindicated with Veritrax. Avoid ketoconazole, itraconazole, clarithromycin. May increase veritraxib AUC up to 5.4×…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MCP TOOLS -->
+    <div class="pane">
+      <div class="pane-head">
+        <span style="color:var(--mcp-accent);">◆</span>
+        <span>WebMCP · Tool Registry</span>
+        <span class="tag">5 tools</span>
+      </div>
+      <div class="mcp-panel" id="mcp">
+
+        <div class="mcp-intro">
+          Discovered from <span class="host">&lt;link rel="mcp" href="/mcp.json"&gt;</span><br>
+          origin: <span class="origin">https://veritrax.com</span><br>
+          client: <span class="client" id="clientLabel">claude-4.7-opus</span>
+        </div>
+
+        <div class="tool-card" data-tool="get_drug_overview">
+          <div class="tool-head-row">
+            <span class="tool-name"><span class="fn">get_drug_overview</span><span class="p">()</span></span>
+            <span class="tool-status">idle</span>
+          </div>
+          <div class="tool-desc">Returns product name, class, mechanism, indication.</div>
+          <div class="tool-schema">
+<span class="c">// returns</span>
+{ <span class="k">name</span>: <span class="t">string</span>, <span class="k">class</span>: <span class="t">string</span>,
+  <span class="k">indication</span>: <span class="t">string</span> }</div>
+          <div class="tool-stat">
+            <span class="src" data-src>—</span>
+            <span class="n" data-count="0">0 calls</span>
+          </div>
+        </div>
+
+        <div class="tool-card" data-tool="get_dosing_info">
+          <div class="tool-head-row">
+            <span class="tool-name"><span class="fn">get_dosing_info</span><span class="p">()</span></span>
+            <span class="tool-status">idle</span>
+          </div>
+          <div class="tool-desc">Returns approved dose, schedule, administration.</div>
+          <div class="tool-schema">
+<span class="c">// returns</span>
+{ <span class="k">dose</span>: <span class="t">string</span>, <span class="k">frequency</span>: <span class="t">string</span> }</div>
+          <div class="tool-stat">
+            <span class="src" data-src>—</span>
+            <span class="n" data-count="0">0 calls</span>
+          </div>
+        </div>
+
+        <div class="tool-card" data-tool="check_drug_interactions">
+          <div class="tool-head-row">
+            <span class="tool-name"><span class="fn">check_drug_interactions</span><span class="p">(…)</span></span>
+            <span class="tool-status">idle</span>
+          </div>
+          <div class="tool-desc">Scan a patient's concomitant meds for known interactions with Veritrax.</div>
+          <div class="tool-schema">
+<span class="c">// params</span>
+{ <span class="k">medications</span>: <span class="t">string[]</span> }
+<span class="c">// returns</span>
+{ <span class="k">severity</span>: <span class="t">"none"|"mod"|"severe"</span>,
+  <span class="k">mechanism</span>: <span class="t">string</span>,
+  <span class="k">action</span>: <span class="t">string</span> }</div>
+          <div class="tool-stat">
+            <span class="src" data-src>—</span>
+            <span class="n" data-count="0">0 calls</span>
+          </div>
+        </div>
+
+        <div class="tool-card" data-tool="get_side_effects">
+          <div class="tool-head-row">
+            <span class="tool-name"><span class="fn">get_side_effects</span><span class="p">(…)</span></span>
+            <span class="tool-status">idle</span>
+          </div>
+          <div class="tool-desc">List known adverse reactions by frequency band.</div>
+          <div class="tool-schema">
+{ <span class="k">frequency</span>: <span class="t">"common"|"serious"</span> }</div>
+          <div class="tool-stat">
+            <span class="src" data-src>—</span>
+            <span class="n" data-count="0">0 calls</span>
+          </div>
+        </div>
+
+        <div class="tool-card" data-tool="get_prescribing_info">
+          <div class="tool-head-row">
+            <span class="tool-name"><span class="fn">get_prescribing_info</span><span class="p">()</span></span>
+            <span class="tool-status">idle</span>
+          </div>
+          <div class="tool-desc">Returns link to full FDA prescribing information (PDF).</div>
+          <div class="tool-schema">
+{ <span class="k">url</span>: <span class="t">string</span>, <span class="k">version</span>: <span class="t">string</span> }</div>
+          <div class="tool-stat">
+            <span class="src" data-src>—</span>
+            <span class="n" data-count="0">0 calls</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BRANDED WEBSITE -->
+    <div class="pane">
+      <div class="pane-head">
+        <span style="color:var(--coral);">●</span>
+        <span>veritrax.com</span>
+        <span class="tag" style="background:rgba(226,123,88,0.15);color:var(--coral);">HCP + PATIENT</span>
+      </div>
+      <div class="website" id="site">
+
+        <nav class="site-nav">
+          <div class="site-logo"><span class="mark">VERITRAX</span><sup>®</sup></div>
+          <div class="site-nav-links">
+            <a href="#">About</a>
+            <a href="#">Dosing</a>
+            <a href="#">Safety</a>
+            <a href="#">Resources</a>
+          </div>
+          <div class="mcp-badge"><span class="bd"></span> MCP</div>
+        </nav>
+
+        <section class="sec hero" data-sec="hero">
+          <span class="accent"></span>
+          <div class="mcp-ping"><span class="pd"></span> get_drug_overview</div>
+          <div class="eyebrow">CDK4/6 Inhibitor · Once-Daily</div>
+          <h1>A precise step <em>between</em> progression and pause.</h1>
+          <p class="tagline">Veritrax<sup>®</sup> (veritraxib) — for adults with HR-positive, HER2-negative advanced or metastatic breast cancer.</p>
+          <dl class="hero-meta">
+            <dt>Generic</dt><dd>veritraxib</dd>
+            <dt>Class</dt><dd>CDK4/6 inhibitor</dd>
+            <dt>Form</dt><dd>Film-coated tablet</dd>
+            <dt>Approval</dt><dd>FDA · 2024</dd>
+          </dl>
+        </section>
+
+        <section class="sec" data-sec="dosing">
+          <span class="accent"></span>
+          <div class="mcp-ping"><span class="pd"></span> get_dosing_info</div>
+          <div class="eyebrow">Dosing & Administration</div>
+          <h2>Once daily. Two dose strengths.</h2>
+          <div class="dose-grid">
+            <div class="dose-card"><div class="amt">200<span>mg</span></div><div class="lb">Starting dose</div></div>
+            <div class="dose-card"><div class="amt">150<span>mg</span></div><div class="lb">First reduction</div></div>
+          </div>
+          <p class="dose-note">Taken orally with or without food at the same time each day. Swallow tablets whole; do not split, crush, or chew. Avoid grapefruit and grapefruit juice.</p>
+        </section>
+
+        <section class="sec" data-sec="interactions">
+          <span class="accent"></span>
+          <div class="mcp-ping"><span class="pd"></span> check_drug_interactions</div>
+          <div class="eyebrow">Drug Interactions</div>
+          <h2>What to avoid while taking Veritrax.</h2>
+
+          <div class="warn-banner" id="warnBanner">
+            <span class="ico">!</span>
+            <span class="tx"><b>Severe interaction detected — ketoconazole.</b><br>Strong CYP3A4 inhibitors are contraindicated. Do not co-administer.</span>
+          </div>
+
+          <div class="int-list">
+            <div class="int-row severe">
+              <div class="sev severe">Severe</div>
+              <div class="body">
+                <b>Strong CYP3A4 inhibitors</b> — contraindicated.
+                <div class="drugs">ketoconazole · itraconazole · clarithromycin · ritonavir</div>
+                <div class="detail">May increase veritraxib AUC up to <b>5.4×</b>, raising risk of Grade 4 neutropenia and hepatotoxicity.</div>
+              </div>
+            </div>
+            <div class="int-row">
+              <div class="sev moderate">Avoid</div>
+              <div class="body">
+                <b>Strong CYP3A4 inducers</b> — may reduce efficacy.
+                <div class="drugs">rifampin · phenytoin · carbamazepine · St. John's wort</div>
+              </div>
+            </div>
+            <div class="int-row">
+              <div class="sev">Caution</div>
+              <div class="body">
+                <b>QT-prolonging agents</b> — monitor ECG.
+                <div class="drugs">ondansetron · methadone · certain fluoroquinolones</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="sec" data-sec="sideeffects">
+          <span class="accent"></span>
+          <div class="mcp-ping"><span class="pd"></span> get_side_effects</div>
+          <div class="eyebrow">Safety Profile</div>
+          <h2>Most common reactions.</h2>
+          <div class="se-grid">
+            <div>
+              <div class="cat">≥ 20% of patients</div>
+              <ul>
+                <li>Neutropenia</li>
+                <li>Fatigue</li>
+                <li>Nausea</li>
+                <li>Diarrhea</li>
+                <li>Leukopenia</li>
+              </ul>
+            </div>
+            <div>
+              <div class="cat">Serious (monitor)</div>
+              <ul>
+                <li>Severe neutropenia (Gr 3/4)</li>
+                <li>Hepatotoxicity</li>
+                <li>Interstitial lung disease</li>
+                <li>Embryo-fetal toxicity</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <footer class="footer">
+          <span class="mock">DEMO · NOT A REAL DRUG</span><br>
+          Veritrax® is a fictional molecule used to demonstrate WebMCP — a pattern where websites expose structured tools that AI agents can invoke on behalf of users. No claims on this page should be taken as medical guidance.
+        </footer>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Transient MLR overlay — positioned dynamically over the running tool card -->
+  <div class="mcp-note-overlay" id="mcpNote" aria-hidden="true">
+    <button class="note-close" id="noteClose" aria-label="Dismiss overlay">×</button>
+    <div class="note-col note-col-left">
+      <div class="head">
+        <span class="ico">◈</span>
+        MLR-approved
+      </div>
+      <div class="sub">Deterministic</div>
+      <div class="live"><span class="dot"></span>enforced</div>
+    </div>
+    <div class="divider"></div>
+    <div class="note-col note-col-right">
+      <div class="headline">The AI <em>reads</em> the answer — it doesn't <em>write</em> it.</div>
+      <div class="body">Tool responses are pre-reviewed brand content served from veritrax.com — <b>not generated by the LLM</b>. Same query, same answer, every time. No hallucinated dosages, no off-label claims, no made-up statistics.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(() => {
+  // Elements
+  const term        = document.getElementById('term');
+  const site        = document.getElementById('site');
+  const warnBanner  = document.getElementById('warnBanner');
+  const replayBtn   = document.getElementById('replay');
+  const viewTabs    = document.getElementById('viewTabs');
+  const viewTag     = document.getElementById('viewTag');
+  const clientLabel = document.getElementById('clientLabel');
+  const mcpNote     = document.getElementById('mcpNote');
+  const consoleView = document.getElementById('consoleView');
+  const searchView  = document.getElementById('searchView');
+
+  const srchInput   = document.getElementById('srchInput');
+  const srchBar     = document.getElementById('srchBar');
+  const aiCard      = document.getElementById('aiCard');
+  const aiStatus    = document.getElementById('aiStatus');
+  const aiStatusText= document.getElementById('aiStatusText');
+  const aiThinking  = document.getElementById('aiThinking');
+  const aiActivity  = document.getElementById('aiActivity');
+  const aiWarnBadge = document.getElementById('aiWarnBadge');
+  const aiBody      = document.getElementById('aiBody');
+  const aiSources   = document.getElementById('aiSources');
+  const aiChips     = document.getElementById('aiChips');
+  const srchResult  = document.getElementById('srchResult');
+
+  const sleep = ms => new Promise(r => setTimeout(r, ms / playbackSpeed));
+  const q  = sel => document.querySelector(sel);
+  const qa = sel => document.querySelectorAll(sel);
+
+  let currentView = 'console';
+  let runId = 0;
+  let playbackSpeed = 1;
+  let overlayDismissed = false;
+  const aborted = (myId) => myId !== runId;
+
+  // ----- Overlay positioning (straddles panes, anchored BELOW the running tool card) -----
+  let lastToolCard = null;
+  function positionOverlayToCard(card) {
+    if (!card || !mcpNote) return;
+    lastToolCard = card;
+    const rect = card.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const gap = 14;
+
+    // Width: wide enough to straddle adjacent panes; clamp to viewport
+    const overlayW = Math.min(740, vw - 40);
+    const cardCenter = rect.left + rect.width / 2;
+    let left = cardCenter - overlayW / 2;
+    left = Math.max(20, Math.min(left, vw - overlayW - 20));
+
+    // Height: match the tool card so it reads as a paired block
+    const overlayH = rect.height;
+
+    // Prefer below the card; flip above if below would overflow the viewport
+    const belowTop = rect.bottom + gap;
+    const aboveTop = rect.top - overlayH - gap;
+    const fitsBelow = belowTop + overlayH <= vh - 20;
+    const top = fitsBelow ? belowTop : Math.max(20, aboveTop);
+
+    mcpNote.style.top    = top + 'px';
+    mcpNote.style.left   = left + 'px';
+    mcpNote.style.width  = overlayW + 'px';
+    mcpNote.style.height = overlayH + 'px';
+  }
+  window.addEventListener('resize', () => {
+    if (mcpNote && mcpNote.classList.contains('is-active') && lastToolCard) {
+      positionOverlayToCard(lastToolCard);
+    }
+  });
+
+  // ----- Shared helpers -----
+  function setToolState(toolName, state, client) {
+    const card = q(`.tool-card[data-tool="${toolName}"]`);
+    if (!card) return;
+    card.classList.remove('running','success','warning');
+    const status = card.querySelector('.tool-status');
+    if (state === 'running')      { card.classList.add('running'); status.textContent = 'running…'; if (mcpNote && toolName === 'check_drug_interactions' && !overlayDismissed) { positionOverlayToCard(card); mcpNote.classList.add('is-active'); } }
+    else if (state === 'success') { card.classList.add('success'); status.textContent = 'ok'; }
+    else if (state === 'warning') { card.classList.add('warning'); status.textContent = 'warning'; }
+    else                          { status.textContent = 'idle'; }
+
+    if (client) {
+      const src = card.querySelector('[data-src]');
+      src.className = `src ${client}`;
+      src.textContent = client === 'console' ? 'via console' : 'via search';
+    }
+  }
+
+  function bumpToolCount(toolName) {
+    const card = q(`.tool-card[data-tool="${toolName}"]`);
+    const cnt = card.querySelector('[data-count]');
+    const n = parseInt(cnt.dataset.count, 10) + 1;
+    cnt.dataset.count = n;
+    cnt.textContent = `${n} call${n === 1 ? '' : 's'}`;
+  }
+
+  function resetTools() {
+    qa('.tool-card').forEach(c => {
+      c.classList.remove('running','success','warning');
+      c.querySelector('.tool-status').textContent = 'idle';
+      const cnt = c.querySelector('[data-count]');
+      cnt.dataset.count = 0;
+      cnt.textContent = '0 calls';
+      const src = c.querySelector('[data-src]');
+      src.className = 'src';
+      src.textContent = '—';
+    });
+    mcpNote && mcpNote.classList.remove('is-active');
+    overlayDismissed = false;
+  }
+
+  function highlightSec(secKey) {
+    qa('.sec').forEach(s => s.classList.remove('is-active'));
+    const sec = q(`.sec[data-sec="${secKey}"]`);
+    if (!sec) return;
+    sec.classList.add('is-active');
+    sec.classList.remove('pulse');
+    void sec.offsetWidth;
+    sec.classList.add('pulse');
+    site.scrollTo({ top: sec.offsetTop - 56, behavior: 'smooth' });
+  }
+
+  function resetSite() {
+    qa('.sec').forEach(s => s.classList.remove('is-active','pulse'));
+    warnBanner.classList.remove('show');
+    site.scrollTo({ top: 0 });
+  }
+
+  // ============ CONSOLE DEMO ============
+  let cursorEl = null;
+  function removeCursor() {
+    if (cursorEl && cursorEl.parentNode) cursorEl.parentNode.removeChild(cursorEl);
+    cursorEl = null;
+  }
+  function addCursor(targetEl) {
+    removeCursor();
+    cursorEl = document.createElement('span');
+    cursorEl.className = 'cursor';
+    (targetEl || term).appendChild(cursorEl);
+  }
+  function scrollTerm() { term.scrollTop = term.scrollHeight; }
+  function appendLine(html, cls='') {
+    removeCursor();
+    const el = document.createElement('span');
+    el.className = 'line ' + cls;
+    el.innerHTML = html;
+    term.appendChild(el);
+    scrollTerm();
+    return el;
+  }
+  async function typeInto(el, text, perChar, myId) {
+    for (let i = 0; i < text.length; i++) {
+      if (aborted(myId)) return;
+      el.insertAdjacentText('beforeend', text[i]);
+      addCursor(el);
+      scrollTerm();
+      const extra = text[i] === ' ' ? 0 : (Math.random() < 0.08 ? 40 : 0);
+      await sleep(perChar + extra);
+    }
+    removeCursor();
+  }
+  function resetConsole() { term.innerHTML = ''; removeCursor(); }
+
+  const USER_MSG = "Hi, I've been taking Veritrax 200mg daily for 6 months for my metastatic breast cancer. My GP just prescribed ketoconazole for a fungal skin infection. Is it safe to take these together?";
+
+  async function runConsoleDemo() {
+    const myId = runId;
+    resetConsole(); resetTools(); resetSite();
+    clientLabel.textContent = 'claude-4.7-opus';
+
+    await sleep(150); if (aborted(myId)) return;
+
+    appendLine('● <span class="ok">connected</span>  veritrax.com  (TLS · HTTP/3)', 'sys');
+    await sleep(120); if (aborted(myId)) return;
+    appendLine('● discovering mcp manifest …  <span class="ok">5 tools</span>', 'sys');
+    await sleep(120); if (aborted(myId)) return;
+    appendLine('● session a81f–2e4c  ·  user agent: claude-4.7-opus', 'sys');
+    await sleep(180); if (aborted(myId)) return;
+    appendLine('─────────────────────────────────────────────', 'divider');
+    await sleep(260); if (aborted(myId)) return;
+
+    const promptLine = appendLine('<span class="prompt">user ›</span> <span class="user"></span>', '');
+    const userSpan = promptLine.querySelector('.user');
+    addCursor(userSpan);
+    await sleep(240); if (aborted(myId)) return;
+    await typeInto(userSpan, USER_MSG, 14, myId); if (aborted(myId)) return;
+    await sleep(500); if (aborted(myId)) return;
+
+    appendLine('<span class="thinking">…thinking · resolving request to available tools</span>', '');
+    await sleep(500); if (aborted(myId)) return;
+
+    appendLine('<span class="agent-label">claude</span> <span class="agent">I\'ll check this for you. First, confirming your medication.</span>', '');
+    await sleep(350); if (aborted(myId)) return;
+
+    appendLine('<span class="tool-head">→ call</span> <span class="tool-head">get_drug_overview</span><span class="tool-arg">()</span>', '');
+    setToolState('get_drug_overview', 'running', 'console');
+    highlightSec('hero');
+    await sleep(900); if (aborted(myId)) return;
+
+    bumpToolCount('get_drug_overview');
+    setToolState('get_drug_overview', 'success', 'console');
+    appendLine('<span class="tool-ok">← ok</span> <span class="tool-arg">{ <span class="val">name</span>: <span class="val">"Veritrax"</span>, <span class="val">class</span>: <span class="val">"CDK4/6 inhibitor"</span>,</span>', '');
+    appendLine('       <span class="tool-arg">  <span class="val">indication</span>: <span class="val">"HR+/HER2− metastatic breast cancer"</span> }</span>', '');
+    await sleep(650); if (aborted(myId)) return;
+
+    appendLine('<span class="agent-label">claude</span> <span class="agent">Now scanning interactions with ketoconazole…</span>', '');
+    await sleep(350); if (aborted(myId)) return;
+
+    appendLine('<span class="tool-head">→ call</span> <span class="tool-head">check_drug_interactions</span><span class="tool-arg">({ <span class="val">medications</span>: [<span class="val">"ketoconazole"</span>] })</span>', '');
+    setToolState('check_drug_interactions', 'running', 'console');
+    highlightSec('interactions');
+    await sleep(1200); if (aborted(myId)) return;
+
+    bumpToolCount('check_drug_interactions');
+    setToolState('check_drug_interactions', 'warning', 'console');
+    warnBanner.classList.add('show');
+
+    appendLine('<span class="tool-warn">← ⚠ warning</span> <span class="tool-arg">{</span>', '');
+    appendLine('       <span class="tool-arg">  severity:  <span style="color:var(--term-red);font-weight:600;">"severe"</span>,</span>', '');
+    appendLine('       <span class="tool-arg">  drug_a:    <span class="val">"veritraxib"</span>,</span>', '');
+    appendLine('       <span class="tool-arg">  drug_b:    <span class="val">"ketoconazole"</span>,</span>', '');
+    appendLine('       <span class="tool-arg">  mechanism: <span class="val">"strong CYP3A4 inhibition"</span>,</span>', '');
+    appendLine('       <span class="tool-arg">  risk:      <span class="val">"↑ veritraxib AUC up to 5.4×"</span>,</span>', '');
+    appendLine('       <span class="tool-arg">  action:    <span style="color:var(--term-red);">"CONTRAINDICATED — avoid concurrent use"</span></span>', '');
+    appendLine('       <span class="tool-arg">}</span>', '');
+    await sleep(950); if (aborted(myId)) return;
+
+    const box = document.createElement('span');
+    box.className = 'line agent-box warn';
+    box.innerHTML = '<span class="agent-label">claude</span><br><br>' +
+      '⚠️  <b>Do not take these together.</b><br><br>' +
+      'Ketoconazole is a strong inhibitor of <b>CYP3A4</b>, the liver enzyme that breaks down Veritrax. Combining them can raise Veritrax blood levels <b>up to ~5×</b> — sharply increasing your risk of severe neutropenia (dangerously low white blood cells) and liver toxicity.<br><br>' +
+      '<b>What to do now:</b><br>' +
+      '  • Hold the ketoconazole before starting it.<br>' +
+      '  • Call your oncology team today.<br>' +
+      '  • Ask about an alternative antifungal — fluconazole or terbinafine at typical doses are usually safer with Veritrax.<br><br>' +
+      '<span style="color:var(--term-dim);">I\'m an AI assistant, not your clinician — please confirm with your oncologist before any change.</span>';
+    term.appendChild(box);
+    scrollTerm();
+    await sleep(400); if (aborted(myId)) return;
+
+    appendLine('<span class="sys">● session idle · 2 tool calls · 1 severe interaction flagged</span>', '');
+  }
+
+  // ============ SEARCH DEMO ============
+  const SEARCH_QUERY = "is ketoconazole safe with veritrax";
+
+  function resetSearch() {
+    srchInput.innerHTML = '';
+    srchBar.classList.remove('focused');
+    aiCard.classList.remove('show');
+    aiBody.innerHTML = '';
+    aiActivity.hidden = true;
+    aiActivity.innerHTML = '';
+    aiThinking.hidden = true;
+    aiWarnBadge.classList.remove('in');
+    aiSources.hidden = true;
+    aiChips.innerHTML = '';
+    srchResult.classList.remove('in');
+    aiStatus.classList.remove('done','warn');
+    aiStatusText.textContent = 'Thinking';
+  }
+
+  async function typeSearchQuery(text, myId) {
+    const cursor = '<span class="cur"></span>';
+    srchInput.innerHTML = cursor;
+    srchBar.classList.add('focused');
+    for (let i = 0; i < text.length; i++) {
+      if (aborted(myId)) return;
+      const c = srchInput.querySelector('.cur');
+      if (c) c.remove();
+      srchInput.insertAdjacentText('beforeend', text[i]);
+      srchInput.insertAdjacentHTML('beforeend', cursor);
+      const extra = text[i] === ' ' ? 20 : (Math.random() < 0.08 ? 60 : 0);
+      await sleep(35 + extra);
+    }
+  }
+
+  function addActivity(html) {
+    aiActivity.hidden = false;
+    const d = document.createElement('div');
+    d.className = 'line';
+    d.innerHTML = html;
+    aiActivity.appendChild(d);
+  }
+
+  function addParagraph(html) {
+    const p = document.createElement('p');
+    p.innerHTML = html;
+    aiBody.appendChild(p);
+    requestAnimationFrame(() => requestAnimationFrame(() => p.classList.add('in')));
+  }
+
+  async function addChip(num, title, tag, delay = 0) {
+    await sleep(delay);
+    const c = document.createElement('span');
+    c.className = 'chip';
+    c.innerHTML = `<span class="num">${num}</span>${title}<span class="tag">${tag}</span>`;
+    aiChips.appendChild(c);
+    requestAnimationFrame(() => requestAnimationFrame(() => c.classList.add('in')));
+  }
+
+  async function runSearchDemo() {
+    const myId = runId;
+    resetSearch(); resetTools(); resetSite();
+    clientLabel.textContent = 'signal.ai-overview';
+
+    await sleep(300); if (aborted(myId)) return;
+
+    await typeSearchQuery(SEARCH_QUERY, myId);
+    if (aborted(myId)) return;
+    await sleep(420); if (aborted(myId)) return;
+
+    const c = srchInput.querySelector('.cur');
+    if (c) c.remove();
+    srchBar.classList.remove('focused');
+
+    aiCard.classList.add('show');
+    aiThinking.hidden = false;
+    await sleep(700); if (aborted(myId)) return;
+
+    aiThinking.hidden = true;
+    aiStatusText.textContent = 'Querying veritrax.com';
+    addActivity('<span class="ok">✓</span> Discovered MCP manifest on <b>veritrax.com</b> (5 tools)');
+    await sleep(450); if (aborted(myId)) return;
+
+    addActivity(`<span class="fn">→ get_drug_overview</span>()`);
+    setToolState('get_drug_overview', 'running', 'search');
+    highlightSec('hero');
+    await sleep(900); if (aborted(myId)) return;
+
+    bumpToolCount('get_drug_overview');
+    setToolState('get_drug_overview', 'success', 'search');
+    addActivity(`<span class="ok">←</span> { name: "Veritrax", class: "CDK4/6 inhibitor" }`);
+    await sleep(500); if (aborted(myId)) return;
+
+    addActivity(`<span class="fn">→ check_drug_interactions</span>({ medications: ["ketoconazole"] })`);
+    setToolState('check_drug_interactions', 'running', 'search');
+    highlightSec('interactions');
+    await sleep(1100); if (aborted(myId)) return;
+
+    bumpToolCount('check_drug_interactions');
+    setToolState('check_drug_interactions', 'warning', 'search');
+    warnBanner.classList.add('show');
+    addActivity(`<span class="w">←</span> { severity: <b>"severe"</b>, action: "CONTRAINDICATED" }`);
+
+    aiStatus.classList.add('warn');
+    aiStatusText.textContent = 'Severe interaction';
+
+    await sleep(650); if (aborted(myId)) return;
+
+    aiWarnBadge.classList.add('in');
+    await sleep(400); if (aborted(myId)) return;
+
+    addParagraph('<b>No — do not combine ketoconazole with Veritrax<sup>®</sup>.</b> The combination is <span class="hl-warn">contraindicated</span> per the current prescribing information.<span class="ref">1</span>');
+    await sleep(650); if (aborted(myId)) return;
+
+    addParagraph('Ketoconazole is a <b>strong CYP3A4 inhibitor</b>, and Veritrax (veritraxib) is cleared primarily by CYP3A4. Co-administration can raise veritraxib exposure by up to <b>5.4×</b>, dramatically increasing the risk of severe (Grade 3/4) neutropenia and hepatotoxicity.<span class="ref">2</span>');
+    await sleep(700); if (aborted(myId)) return;
+
+    addParagraph('Patients on Veritrax who need antifungal therapy should speak with their oncologist — <b>fluconazole</b> or <b>terbinafine</b> at standard doses are generally preferred over ketoconazole or itraconazole.');
+    await sleep(500); if (aborted(myId)) return;
+
+    aiSources.hidden = false;
+    aiStatus.classList.remove('warn');
+    aiStatus.classList.add('done');
+    aiStatusText.textContent = 'Complete';
+
+    addChip(1, 'veritrax.com', 'Interactions', 80);
+    addChip(2, 'veritrax.com', 'Overview', 240);
+
+    await sleep(500); if (aborted(myId)) return;
+
+    srchResult.classList.add('in');
+  }
+
+  // ============ View management ============
+  function switchView(view) {
+    if (view === currentView) return;
+    currentView = view;
+    runId++;  // cancel any in-flight demo
+
+    qa('#viewTabs button').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+
+    if (view === 'console') {
+      consoleView.hidden = false;
+      searchView.hidden = true;
+    } else {
+      consoleView.hidden = true;
+      searchView.hidden = false;
+    }
+
+    setTimeout(startActiveDemo, 200);
+  }
+
+  function startActiveDemo() {
+    runId++;
+    if (currentView === 'console') runConsoleDemo();
+    else runSearchDemo();
+  }
+
+  viewTabs.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-view]');
+    if (!btn) return;
+    switchView(btn.dataset.view);
+  });
+
+  replayBtn.addEventListener('click', startActiveDemo);
+
+  // Speed control
+  document.getElementById('speedButtons').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-speed]');
+    if (!btn) return;
+    playbackSpeed = parseFloat(btn.dataset.speed);
+    qa('#speedButtons button').forEach(b =>
+      b.classList.toggle('active', b === btn)
+    );
+  });
+
+  // Dismiss overlay
+  document.getElementById('noteClose').addEventListener('click', () => {
+    mcpNote.classList.remove('is-active');
+    overlayDismissed = true;
+  });
+
+  window.addEventListener('load', () => {
+    setTimeout(startActiveDemo, 400);
+  });
+})();
+</script>
+
+</body>
+</html>

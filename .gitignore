@@ -1,0 +1,6 @@
+_qa/
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+*.stackdump

@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebMCP for Pharma · 10-min First Look</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand: #0F3D3E;
+    --brand-dark: #092728;
+    --brand-mid: #1F5556;
+    --cream: #FAF6ED;
+    --cream-dark: #F2ECDD;
+    --cream-edge: #ECE5D2;
+    --coral: #E27B58;
+    --coral-dark: #C5624A;
+    --warn: #B53227;
+    --warn-bg: #FBE4DF;
+    --ink: #1A2828;
+    --ink-muted: #5A6868;
+    --ink-faint: #8A938F;
+    --rule: #DCD4BE;
+    --paper: #FDFBF4;
+
+    --fs-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --fs-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+    --fs-body: 'Inter Tight', system-ui, sans-serif;
+  }
+
+  html, body { height: 100%; }
+  body {
+    font-family: var(--fs-body);
+    background: var(--cream);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* ───────── Deck shell ───────── */
+
+  .deck {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 56px 72px 64px;
+    display: none;
+    flex-direction: column;
+    background: var(--cream);
+    overflow: hidden;
+  }
+  .slide.active { display: flex; }
+
+  .slide[data-role="appendix"],
+  .slide[data-role="appendix-divider"] {
+    background: var(--cream-dark);
+  }
+
+  /* Top meta row */
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--fs-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 48px;
+    flex-shrink: 0;
+  }
+  .meta-row .left { display: flex; gap: 18px; align-items: center; }
+  .meta-row .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--coral);
+    display: inline-block;
+  }
+  .meta-row .sep { color: var(--ink-faint); opacity: 0.5; }
+
+  /* Eyebrow above titles */
+  .eyebrow {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--coral-dark);
+    margin-bottom: 22px;
+  }
+
+  /* Slide title (full-sentence message) */
+  h1.title {
+    font-family: var(--fs-display);
+    font-weight: 400;
+    font-size: clamp(36px, 4.4vw, 64px);
+    line-height: 1.06;
+    letter-spacing: -0.018em;
+    color: var(--brand);
+    max-width: 22ch;
+  }
+  h1.title em {
+    font-style: italic;
+    color: var(--coral-dark);
+  }
+
+  /* Body areas */
+  .body {
+    margin-top: 40px;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .lede {
+    font-family: var(--fs-body);
+    font-size: clamp(17px, 1.5vw, 21px);
+    line-height: 1.5;
+    color: var(--ink);
+    max-width: 62ch;
+  }
+  .lede strong { color: var(--brand); font-weight: 600; }
+
+  /* Footer */
+  .footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    font-family: var(--fs-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    flex-shrink: 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+  }
+  .footer-row .source {
+    max-width: 70%;
+    line-height: 1.5;
+    text-transform: none;
+    letter-spacing: 0.04em;
+    font-size: 10.5px;
+    color: var(--ink-muted);
+    font-family: var(--fs-body);
+  }
+  .footer-row .counter { white-space: nowrap; }
+
+  /* ───────── Cover slide ───────── */
+  .slide[data-role="cover"] {
+    padding: 0;
+    background: var(--cream);
+  }
+  .cover-inner {
+    flex: 1;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 56px 72px;
+  }
+  .cover-mark {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--brand);
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  .cover-mark .pulse {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--coral);
+    box-shadow: 0 0 0 4px rgba(226,123,88,0.18);
+  }
+  .cover-headline {
+    align-self: end;
+    max-width: 18ch;
+  }
+  .cover-headline h1 {
+    font-family: var(--fs-display);
+    font-weight: 300;
+    font-size: clamp(54px, 8vw, 124px);
+    line-height: 0.96;
+    letter-spacing: -0.025em;
+    color: var(--brand);
+  }
+  .cover-headline h1 em {
+    font-style: italic;
+    color: var(--coral-dark);
+    font-weight: 400;
+  }
+  .cover-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    border-top: 1px solid var(--rule);
+    padding-top: 22px;
+  }
+  .cover-foot .sub {
+    font-family: var(--fs-body);
+    font-size: 17px;
+    color: var(--ink-muted);
+    max-width: 46ch;
+    line-height: 1.5;
+  }
+  .cover-foot .meta {
+    font-family: var(--fs-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* ───────── Hero number slide ───────── */
+  .hero-number {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    flex: 1;
+  }
+  .hero-number .big {
+    font-family: var(--fs-display);
+    font-weight: 300;
+    font-size: clamp(120px, 18vw, 280px);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--brand);
+  }
+  .hero-number .unit {
+    font-family: var(--fs-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(28px, 3.2vw, 44px);
+    color: var(--coral-dark);
+    margin-top: 12px;
+  }
+  .hero-number .caption {
+    margin-top: 36px;
+    font-size: 19px;
+    line-height: 1.5;
+    max-width: 44ch;
+    color: var(--ink);
+  }
+
+  /* ───────── Stat trio ───────── */
+  .stat-trio {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    margin-top: 12px;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .stat-cell {
+    padding: 36px 28px;
+    border-right: 1px solid var(--rule);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .stat-cell:last-child { border-right: 0; }
+  .stat-cell .num {
+    font-family: var(--fs-display);
+    font-weight: 400;
+    font-size: clamp(54px, 6vw, 84px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--brand);
+  }
+  .stat-cell .num.neg { color: var(--coral-dark); }
+  .stat-cell .lbl {
+    font-size: 14.5px;
+    line-height: 1.4;
+    color: var(--ink);
+    max-width: 26ch;
+    margin-top: 8px;
+  }
+  .stat-cell .src {
+    margin-top: auto;
+    padding-top: 10px;
+    font-family: var(--fs-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ───────── Two-column compare ───────── */
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--rule);
+    margin-top: 8px;
+  }
+  .compare > div {
+    padding: 28px 28px 32px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .compare > div:nth-child(odd) {
+    border-right: 1px solid var(--rule);
+  }
+  .compare .col-eyebrow {
+    font-family: var(--fs-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .compare .left .col-eyebrow { color: var(--warn); }
+  .compare .right .col-eyebrow { color: var(--brand-mid); }
+  .compare .quote {
+    font-family: var(--fs-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+  .compare .ref {
+    font-size: 13px;
+    color: var(--ink-muted);
+    margin-top: 14px;
+  }
+  .compare .approved {
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--brand);
+  }
+  .compare .approved .label {
+    font-family: var(--fs-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* ───────── WebMCP explainer ───────── */
+  .explain-rows {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid var(--rule);
+  }
+  .explain-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 32px;
+    padding: 26px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .explain-row .k {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--coral-dark);
+    padding-top: 4px;
+  }
+  .explain-row .v {
+    font-family: var(--fs-display);
+    font-weight: 400;
+    font-size: clamp(22px, 2.2vw, 30px);
+    line-height: 1.25;
+    color: var(--brand);
+    letter-spacing: -0.01em;
+  }
+  .explain-row .v .small {
+    display: block;
+    font-family: var(--fs-body);
+    font-style: normal;
+    font-size: 15px;
+    color: var(--ink-muted);
+    margin-top: 6px;
+    max-width: 60ch;
+    line-height: 1.5;
+  }
+
+  /* Inline metaphor card on WebMCP slide */
+  .metaphor {
+    margin-top: 28px;
+    padding: 24px 28px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    align-items: center;
+  }
+  .metaphor .icon {
+    font-family: var(--fs-display);
+    font-size: 38px;
+    color: var(--coral-dark);
+    font-style: italic;
+    line-height: 1;
+  }
+  .metaphor p {
+    font-size: 16.5px;
+    color: var(--ink);
+    line-height: 1.55;
+    max-width: 70ch;
+  }
+  .metaphor p strong { color: var(--brand); font-weight: 600; }
+
+  /* ───────── MLR table ───────── */
+  .mlr-table {
+    margin-top: 8px;
+    border-top: 2px solid var(--brand);
+    border-bottom: 1px solid var(--rule);
+  }
+  .mlr-table .header,
+  .mlr-table .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--rule);
+  }
+  .mlr-table .header > div {
+    padding: 14px 22px;
+    font-family: var(--fs-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .mlr-table .header > div:first-child {
+    border-right: 1px solid var(--rule);
+    color: var(--warn);
+  }
+  .mlr-table .header > div:last-child {
+    color: var(--brand);
+  }
+  .mlr-table .row > div {
+    padding: 18px 22px;
+    font-size: 16px;
+    line-height: 1.45;
+  }
+  .mlr-table .row > div:first-child {
+    border-right: 1px solid var(--rule);
+    color: var(--ink-muted);
+  }
+  .mlr-table .row > div:last-child {
+    color: var(--brand);
+    font-weight: 500;
+    background: var(--paper);
+  }
+  .mlr-table .row .arrow {
+    color: var(--coral);
+    font-style: italic;
+    font-family: var(--fs-display);
+  }
+
+  /* ───────── Veritrax brand slide ───────── */
+  .veritrax-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .veritrax-card .disclaimer {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--coral-dark);
+    padding: 6px 12px;
+    border: 1px solid var(--coral);
+    margin-bottom: 28px;
+  }
+  .veritrax-card .name {
+    font-family: var(--fs-display);
+    font-weight: 300;
+    font-size: clamp(80px, 11vw, 160px);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    color: var(--brand);
+  }
+  .veritrax-card .name sup {
+    font-size: 0.35em;
+    vertical-align: super;
+    color: var(--coral-dark);
+  }
+  .veritrax-card .generic {
+    font-family: var(--fs-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(24px, 2.6vw, 34px);
+    color: var(--ink-muted);
+    margin-top: 12px;
+  }
+  .veritrax-card .desc {
+    margin-top: 36px;
+    font-size: 17px;
+    color: var(--ink);
+    max-width: 50ch;
+    line-height: 1.55;
+  }
+
+  /* ───────── Demo slide ───────── */
+  .slide[data-role="demo"] {
+    padding: 28px 36px 36px;
+    background: var(--cream-dark);
+  }
+  .demo-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-family: var(--fs-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .demo-meta .live {
+    color: var(--coral-dark);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .demo-meta .live::before {
+    content: '';
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--coral);
+    box-shadow: 0 0 0 3px rgba(226,123,88,0.2);
+  }
+  .demo-frame-wrap {
+    flex: 1;
+    border: 1px solid var(--brand);
+    background: #000;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(15,61,62,0.18);
+  }
+  .demo-frame-wrap iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+  .demo-share {
+    margin-top: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    font-size: 13px;
+    color: var(--ink-muted);
+  }
+  .demo-share .url {
+    font-family: var(--fs-mono);
+    font-size: 12px;
+    color: var(--brand);
+    word-break: break-all;
+  }
+  .demo-share .hint {
+    color: var(--coral-dark);
+    font-style: italic;
+    font-family: var(--fs-display);
+    font-size: 16px;
+  }
+
+  /* ───────── Close slide ───────── */
+  .close-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 56px;
+    margin-top: 8px;
+    flex: 1;
+    align-items: start;
+  }
+  .close-col h3 {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--coral-dark);
+    margin-bottom: 22px;
+  }
+  .close-col ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .close-col li {
+    font-family: var(--fs-display);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.3;
+    color: var(--brand);
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .close-col li:last-child { border-bottom: 0; }
+  .close-ask {
+    background: var(--brand);
+    color: var(--cream);
+    padding: 32px 28px;
+  }
+  .close-ask h3 { color: var(--coral); }
+  .close-ask .ask {
+    font-family: var(--fs-display);
+    font-weight: 400;
+    font-style: italic;
+    font-size: 26px;
+    line-height: 1.3;
+    color: var(--cream);
+  }
+  .close-ask .ask em { color: #FFD580; font-style: normal; font-weight: 500; }
+  .close-ask .send {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(250,246,237,0.2);
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(250,246,237,0.7);
+  }
+  .close-ask .send .url {
+    display: block;
+    font-size: 12px;
+    text-transform: none;
+    letter-spacing: 0.04em;
+    color: var(--coral);
+    margin-top: 6px;
+    word-break: break-all;
+  }
+
+  /* ───────── Appendix divider ───────── */
+  .slide[data-role="appendix-divider"] {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .appendix-mark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+  .appendix-mark .label {
+    font-family: var(--fs-mono);
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--coral-dark);
+  }
+  .appendix-mark .h {
+    font-family: var(--fs-display);
+    font-weight: 300;
+    font-size: clamp(48px, 6vw, 84px);
+    line-height: 1.05;
+    color: var(--brand);
+    max-width: 18ch;
+    letter-spacing: -0.02em;
+  }
+  .appendix-mark .h em { font-style: italic; color: var(--coral-dark); }
+  .appendix-mark .rule {
+    width: 80px;
+    height: 1px;
+    background: var(--brand);
+    margin: 8px 0;
+  }
+
+  /* ───────── Backup Q&A slides ───────── */
+  .slide[data-role="appendix"] .meta-row .left::before {
+    content: '◆ APPENDIX';
+    color: var(--coral-dark);
+    margin-right: 14px;
+  }
+  .qa-question {
+    font-family: var(--fs-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(28px, 3.2vw, 44px);
+    line-height: 1.2;
+    color: var(--brand);
+    max-width: 28ch;
+    letter-spacing: -0.012em;
+  }
+  .qa-answer {
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink);
+    max-width: 70ch;
+  }
+  .qa-answer p strong { color: var(--brand); font-weight: 600; }
+  .qa-answer .key {
+    font-family: var(--fs-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--coral-dark);
+    margin-bottom: 4px;
+  }
+
+  /* ───────── References slide ───────── */
+  .refs {
+    margin-top: 8px;
+    columns: 2;
+    column-gap: 56px;
+    column-rule: 1px solid var(--rule);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink-muted);
+  }
+  .refs .ref {
+    break-inside: avoid;
+    margin-bottom: 18px;
+  }
+  .refs .ref strong {
+    display: block;
+    font-family: var(--fs-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .refs .ref a {
+    color: var(--brand-mid);
+    text-decoration: underline;
+    text-decoration-color: var(--rule);
+    text-underline-offset: 2px;
+    word-break: break-all;
+  }
+
+  /* ───────── Speaker notes overlay ───────── */
+  aside.notes { display: none; }
+
+  .notes-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(9, 39, 40, 0.96);
+    color: var(--cream);
+    padding: 56px 80px;
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .notes-overlay.visible { display: flex; }
+  .notes-overlay .notes-meta {
+    font-family: var(--fs-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--coral);
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .notes-overlay h2 {
+    font-family: var(--fs-display);
+    font-weight: 300;
+    font-size: 32px;
+    line-height: 1.2;
+    color: var(--cream);
+    margin-bottom: 32px;
+    max-width: 30ch;
+  }
+  .notes-overlay .notes-body {
+    font-size: 17px;
+    line-height: 1.65;
+    max-width: 78ch;
+    color: rgba(250,246,237,0.92);
+  }
+  .notes-overlay .notes-body p { margin-bottom: 16px; }
+  .notes-overlay .notes-body strong { color: #FFD580; font-weight: 600; }
+  .notes-overlay .notes-body em {
+    color: var(--coral);
+    font-style: italic;
+    font-family: var(--fs-display);
+    font-size: 19px;
+  }
+  .notes-overlay .notes-body .step {
+    display: block;
+    font-family: var(--fs-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--coral);
+    margin-top: 18px;
+    margin-bottom: 4px;
+  }
+
+  /* ───────── Help overlay ───────── */
+  .help-overlay {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--brand);
+    color: var(--cream);
+    padding: 8px 18px;
+    font-family: var(--fs-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    z-index: 50;
+    opacity: 0.9;
+    display: flex;
+    gap: 18px;
+    transition: opacity 0.4s ease;
+  }
+  .help-overlay.faded { opacity: 0; pointer-events: none; }
+  .help-overlay kbd {
+    background: rgba(250,246,237,0.18);
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: 9.5px;
+    margin-right: 4px;
+  }
+
+  /* ───────── Progress strip ───────── */
+  .progress {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: transparent;
+    z-index: 60;
+  }
+  .progress .fill {
+    height: 100%;
+    background: var(--coral);
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  @media (max-width: 900px) {
+    .slide { padding: 32px 28px 40px; }
+    .stat-trio { grid-template-columns: 1fr; }
+    .stat-cell { border-right: 0; border-bottom: 1px solid var(--rule); }
+    .stat-cell:last-child { border-bottom: 0; }
+    .compare { grid-template-columns: 1fr; }
+    .compare > div:nth-child(odd) { border-right: 0; }
+    .close-grid { grid-template-columns: 1fr; gap: 28px; }
+    .explain-row { grid-template-columns: 1fr; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="fill" id="progressFill"></div></div>
+
+<div class="deck" id="deck">
+
+  <!-- ════════ SLIDE 1 — COVER ════════ -->
+  <section class="slide" data-role="cover" data-title="Cover">
+    <div class="cover-inner">
+      <div class="cover-mark">
+        <span class="pulse"></span>
+        <span>WebMCP for Pharma</span>
+        <span style="color:var(--ink-faint)">·</span>
+        <span style="color:var(--ink-faint)">First look · 10 minutes</span>
+      </div>
+
+      <div class="cover-headline">
+        <h1>The AI is already answering questions about <em>your drug.</em></h1>
+      </div>
+
+      <div class="cover-foot">
+        <div class="sub">A 10-minute look at a new web standard called WebMCP — and why your MLR team might actually like it.</div>
+        <div class="meta">
+          For client review<br>
+          April 2026
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <strong>Open with the title slide.</strong> Don't read it. Wait two beats. Then go straight into the hook on the next slide — don't introduce yourself or run an agenda. The hook earns the next ten minutes.
+      <em>"Before I tell you what we're here for, I want to give you one number."</em>
+      Then advance.
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 2 — THE 40M HOOK ════════ -->
+  <section class="slide" data-role="main" data-title="The 40-million-a-day shift">
+    <div class="meta-row">
+      <div class="left">
+        <span class="dot"></span>
+        <span>The shift</span>
+      </div>
+      <div>01 / 09</div>
+    </div>
+
+    <div class="hero-number">
+      <div class="big">40,000,000</div>
+      <div class="unit">people, every day.</div>
+      <div class="caption">That's how many people asked ChatGPT a health question yesterday. Some of them asked about your drug. None of those answers came from your website.</div>
+    </div>
+
+    <div class="footer-row">
+      <div class="source">Source: OpenAI Healthcare report (January 2026); 230M weekly globally; 1 in 4 ChatGPT users prompts about health every week.</div>
+      <div class="counter">02 / 09</div>
+    </div>
+
+    <aside class="notes">
+      <strong>Pause on the number.</strong> Let it sit. Don't rush.
+      <em>"40 million people asked ChatGPT a health question yesterday. Not last year. Yesterday. OpenAI published this in January. Globally it's 230 million people every week. One in four ChatGPT users asks something health-related every single week. Your patients. Your prescribers. Your caregivers. They're all in there. And the answer they're getting — right now — isn't coming from you."</em>
+
+      <span class="step">Why this works</span>
+      It reframes "AI in healthcare" from a future thing to a current thing. If they push back ("our patients don't use ChatGPT") — they do, the data is from OpenAI directly. Move on; don't litigate.
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 3 — TRAFFIC COLLAPSE ════════ -->
+  <section class="slide" data-role="main" data-title="Your brand.com is becoming invisible">
+    <div class="meta-row">
+      <div class="left">
+        <span class="dot"></span>
+        <span>The distribution problem</span>
+      </div>
+      <div>02 / 09</div>
+    </div>
+
+    <div class="eyebrow">Meanwhile, on Google</div>
+    <h1 class="title">Your rankings are fine. Your <em>clicks</em> are quietly halving.</h1>
+
+    <div class="body">
+      <div class="stat-trio">
+        <div class="stat-cell">
+          <div class="num">89%</div>
+          <div class="lbl">of healthcare queries now show an AI Overview at the top of Google.</div>
+          <div class="src">BrightEdge · Dec 2025</div>
+        </div>
+        <div class="stat-cell">
+          <div class="num">100%</div>
+          <div class="lbl">of treatment-related queries trigger an AI Overview. 93% for symptoms.</div>
+          <div class="src">BrightEdge · Dec 2025</div>
+        </div>
+        <div class="stat-cell">
+          <div class="num neg">−61%</div>
+          <div class="lbl">drop in click-through rate when an AI Overview is present on the page.</div>
+          <div class="src">Seer Interactive · Sep 2025</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-row">
+      <div class="source">Zero-click rate on Google rose from 56% to 69% (May 2024 → May 2025). Your weekly SEO report shows green; nobody's clicking anymore.</div>
+      <div class="counter">03 / 09</div>
+    </div>
+
+    <aside class="notes">
+      <em>"Here's what nobody's putting in the weekly report. Rankings are still fine. Page one, position one, all green. But the clicks are gone. When a patient Googles 'can I take [your drug] with ibuprofen,' Google answers the question right there in a box at the top of the page. The user reads it and closes the tab. Your website never loads."</em>
+      <em>"This isn't a marketing problem. It's a distribution problem. And it's structural — it's not coming back."</em>
+
+      <span class="step">If asked: "How sure is the 61%?"</span>
+      Seer Interactive measured it across queries with and without AI Overviews in September 2025. BrightEdge has similar numbers. Ahrefs measured 58% in December. The exact number moves but the direction is unanimous.
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 4 — THE SCARIER PART ════════ -->
+  <section class="slide" data-role="main" data-title="The AI is talking about your drug — you don't control what it says">
+    <div class="meta-row">
+      <div class="left">
+        <span class="dot"></span>
+        <span>The risk on both sides</span>
+      </div>
+      <div>03 / 09</div>
+    </div>
+
+    <div class="eyebrow">The twist</div>
+    <h1 class="title">Your traffic is collapsing — but the conversation about your drug <em>isn't.</em></h1>
+
+    <div class="body">
+      <div class="compare">
+        <div class="left">
+          <div class="col-eyebrow">◆ What an AI told a real patient</div>
+          <div class="quote">"Patients with pancreatic cancer should avoid high-fat foods…"</div>
+          <div class="ref">Google AI Overview, flagged by oncologists as <strong>"completely incorrect"</strong> and "could really jeopardise a person's chances of being well enough to have treatment." — The Guardian investigation, January 2026.</div>
+        </div>
+        <div class="right">
+          <div class="col-eyebrow">◇ Meanwhile, the regulator</div>
+          <div class="approved">
+            <span class="label">FDA OPDP enforcement, 2025</span>
+            <strong style="font-family:var(--fs-display);font-size:38px;font-weight:300;color:var(--brand);display:block;margin-bottom:10px;">~200 letters</strong>
+            The most in 25 years. 40 untitled letters on Sept 9 alone, then 80 more on Sept 16. FDA confirmed it now uses AI to surveil drug ads.
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:28px;font-size:17px;line-height:1.55;color:var(--ink);max-width:78ch;">
+        AI is generating brand-adjacent claims you didn't approve. The regulator is watching with its own AI. <strong style="color:var(--brand);">Doing nothing isn't neutral — it's a position.</strong>
+      </div>
+    </div>
+
+    <div class="footer-row">
+      <div class="source">Sources: The Guardian (Jan 2026, via SEJ); FDA Law Blog &amp; King &amp; Spalding 2025 enforcement reviews; FDA OPDP press release on AI surveillance.</div>
+      <div class="counter">04 / 09</div>
+    </div>
+
+    <aside class="notes">
+      <em>"Here's the twist. Your traffic is collapsing — but the conversation about your drug isn't. It's growing. The AI is answering questions about dosing, interactions, side effects — whether you participate or not. It pulls from old PDFs, forum threads, your competitor's HCP portal, and sometimes your own prescribing information if it can parse it. The result is a brand narrative being generated by an algorithm, from sources you didn't approve, and sometimes — as the Guardian found — dangerously wrong."</em>
+
+      <em>"And while that's happening, the FDA had its biggest enforcement year in a quarter century. They've publicly said they use AI to find ad violations. So you're being talked about by AI you don't control, and watched by AI you can't see. That's the situation today."</em>
+
+      <span class="step">Don't say</span>
+      Don't try to explain HOW the FDA's AI works or HOW Google's AI Overviews are generated. You don't need to. The point is: both exist, and both affect you.
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 5 — WEBMCP EXPLAINED ════════ -->
+  <section class="slide" data-role="main" data-title="WebMCP — the new layer, in plain English">
+    <div class="meta-row">
+      <div class="left">
+        <span class="dot"></span>
+        <span>The new layer</span>
+      </div>
+      <div>04 / 09</div>
+    </div>
+
+    <div class="eyebrow">Introducing</div>
+    <h1 class="title">WebMCP. Think of it as a <em>menu</em> your website hands the AI.</h1>
+
+    <div class="body">
+      <div class="metaphor">
+        <div class="icon">"</div>
+        <p>Today, the AI walks into your website like a stranger and tries to read whatever it finds. <strong>WebMCP lets your website hand the AI a printed menu</strong> — "here are the questions I'll answer, and here's the exact answer for each one." The AI orders from the menu. Your website serves the answer. Same dish, every time.</p>
+      </div>
+
+      <div class="explain-rows">
+        <div class="explain-row">
+          <div class="k">What it is</div>
+          <div class="v">A new web standard.
+            <span class="small">A small, agreed-upon way for any website to publish a list of "things AI can ask me about" — and the approved answer for each.</span>
+          </div>
+        </div>
+        <div class="explain-row">
+          <div class="k">Who built it</div>
+          <div class="v">Google + Microsoft, through the W3C.
+            <span class="small">Co-authored, openly published. Same group that defines how the web works.</span>
+          </div>
+        </div>
+        <div class="explain-row">
+          <div class="k">Where it lives</div>
+          <div class="v">In Chrome — early preview, March 2026.
+            <span class="small">Honest framing: it shipped in Chrome's early-preview channel, not the stable browser yet. Microsoft co-authoring means Edge follows. This is the moment to be early — not late.</span>
+          </div>
+        </div>
+        <div class="explain-row">
+          <div class="k">What it isn't</div>
+          <div class="v">Not a chatbot. Not a new website. Not a product to buy.
+            <span class="small">It's a small piece of code that bolts onto the website you already have.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-row">
+      <div class="source">Sources: W3C Community Group draft (Feb 10, 2026); Chrome 146 release notes &amp; developer blog; VentureBeat / Search Engine Land coverage Feb–Mar 2026.</div>
+      <div class="counter">05 / 09</div>
+    </div>
+
+    <aside class="notes">
+      <em>"WebMCP stands for Web Model Context Protocol. Don't worry about the name. Here's the only thing that matters."</em>
+      <em>"Today, when an AI looks at your website, it's like a stranger walking into a restaurant kitchen and trying to figure out what to cook. WebMCP gives the AI a menu. Your website says: 'here are the questions I'll answer — dosing, interactions, side effects — and here's exactly what to say for each one.' The AI orders from the menu and serves your answer."</em>
+      <em>"Three honest things to know. Google and Microsoft co-built it. It's brand new — it shipped in Chrome's early preview last month. And it's NOT a chatbot. There's nothing to buy. It bolts onto the site you already have."</em>
+
+      <span class="step">If asked: "When will other browsers support it?"</span>
+      Microsoft co-authored the spec, so Edge is highly likely. Apple and Mozilla haven't said yet. Even Chrome-only is roughly two-thirds of the US browser market today.
+
+      <span class="step">If asked: "Is this a real standard or a beta?"</span>
+      Both. It's a published W3C draft from a real working group. It's also early. That's exactly what the opportunity window looks like.
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 6 — MLR INVERSION ════════ -->
+  <section class="slide" data-role="main" data-title="Why your MLR team should actually like this">
+    <div class="meta-row">
+      <div class="left">
+        <span class="dot"></span>
+        <span>The MLR inversion</span>
+      </div>
+      <div>05 / 09</div>
+    </div>
+
+    <div class="eyebrow">For the compliance people in the room</div>
+    <h1 class="title">The AI <em>reads</em> your answer. It doesn't write it.</h1>
+
+    <div class="body">
+      <div class="mlr-table">
+        <div class="header">
+          <div>Generative AI today</div>
+          <div>WebMCP-served response</div>
+        </div>
+        <div class="row">
+          <div>Different answer every time you ask</div>
+          <div><span class="arrow">→ </span>The same approved answer, every time</div>
+        </div>
+        <div class="row">
+          <div>Hallucinates dosages, off-label suggestions</div>
+          <div><span class="arrow">→ </span>Pre-reviewed by your MLR team before it ever appears</div>
+        </div>
+        <div class="row">
+          <div>No audit trail for the regulator</div>
+          <div><span class="arrow">→ </span>Every call logged. Every source is your site.</div>
+        </div>
+        <div class="row">
+          <div>MLR spends time chasing model drift</div>
+          <div><span class="arrow">→ </span>Approve once, served forever (until you change it)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-row">
+      <div class="source">The first time AI and MLR have been on the same side of the table.</div>
+      <div class="counter">06 / 09</div>
+    </div>
+
+    <aside class="notes">
+      <em>"This is the slide your MLR team needs to see. The reason generative AI scares compliance is that the model is the AUTHOR. It writes a new sentence every time you ask. WebMCP flips that. The AI is no longer the author — it's just the delivery person. Your MLR team approves the answer once. Every AI that asks gets that exact answer. Same query, same words, every time."</em>
+
+      <span class="step">The honest caveat (only if pressed)</span>
+      The AI can still wrap framing language around your approved answer ("Based on the manufacturer's site…"). What WebMCP locks is the payload — the actual medical content. We'll show this in the demo. If they ask "how do you guarantee verbatim use" — the honest answer is: WebMCP solves about 80% of the determinism problem. The remaining 20% is platform policy, and the platforms are aligning that way because of liability.
+
+      <span class="step">Pivot</span>
+      <em>"Now let me stop talking and show you. We built a demo on a fictional drug so we could walk you through this without getting tangled in any specific claim about your portfolio."</em>
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 7 — VERITRAX INTRO ════════ -->
+  <section class="slide" data-role="main" data-title="Meet Veritrax — a fictional drug we built for you">
+    <div class="meta-row">
+      <div class="left">
+        <span class="dot"></span>
+        <span>Demo setup</span>
+      </div>
+      <div>06 / 09</div>
+    </div>
+
+    <div class="veritrax-card">
+      <div class="disclaimer">Demo · Not a real drug</div>
+      <div class="name">VERITRAX<sup>®</sup></div>
+      <div class="generic">veritraxib · 200mg once-daily tablet</div>
+      <div class="desc">A hypothetical CDK4/6 inhibitor for HR+/HER2− metastatic breast cancer. Built specifically for this meeting so we can show you the mechanism without getting tangled in any claim about your real products.</div>
+    </div>
+
+    <div class="footer-row">
+      <div class="source">Pharmacology mirrors real CDK4/6 inhibitors so the interactions are plausible. The molecule is the only thing made up.</div>
+      <div class="counter">07 / 09</div>
+    </div>
+
+    <aside class="notes">
+      <em>"Quick note before we go to the demo. We built a fictional drug. It's called Veritrax. It does not exist. We made it up on purpose — because if we used a real cancer drug, the next twenty minutes would be a debate about whether some specific claim is on-label or off-label for your portfolio. We didn't want that. We wanted you to see the mechanism."</em>
+      <em>"It's a CDK4/6 inhibitor — same drug class as Ibrance, Kisqali, Verzenio. Except Veritrax doesn't compete with anyone, because it's imaginary. Once you see what it does, mentally swap your actual brand in."</em>
+      <em>"Here we go."</em>
+
+      <span class="step">Don't say</span>
+      Don't apologize for it being fictional. Don't over-explain. The disclaimer is on the slide; the room sees it.
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 8 — LIVE DEMO (the climax) ════════ -->
+  <section class="slide" data-role="demo" data-title="Live demo — patient + ketoconazole scenario">
+    <div class="demo-meta">
+      <div>WebMCP demo · veritrax.com</div>
+      <div class="live">Live · running in this slide</div>
+    </div>
+
+    <div class="demo-frame-wrap">
+      <iframe src="webmcp-veritrax-demo.html" title="WebMCP Veritrax demo" loading="lazy"></iframe>
+    </div>
+
+    <div class="demo-share">
+      <div>
+        Try it on your phone — same demo, full screen:
+        <div class="url">claude.ai/public/artifacts/b5f575d2-4891-4bb9-97f0-cdf307609f20</div>
+      </div>
+      <div class="hint">"One protocol. Every AI surface. Same approved answer."</div>
+    </div>
+
+    <aside class="notes">
+      <strong>Run the demo for 3-4 minutes. Use this script verbatim.</strong>
+
+      <span class="step">Step 1 — Orient the room (15 sec)</span>
+      <em>"Three panes. Left is the user — a patient. Middle is what the brand has published — five things the AI is allowed to ask Veritrax about. Right is the actual brand website."</em>
+
+      <span class="step">Step 2 — Start the Console view (45 sec)</span>
+      Click play if it isn't already running. Let the patient's question type out. Read it aloud once it appears: <em>"My GP just prescribed me ketoconazole. Is that safe with Veritrax?"</em>
+
+      <span class="step">Step 3 — Watch the tool fire (20 sec)</span>
+      When <strong>check_drug_interactions</strong> lights up, point at the middle pane. <em>"That's the AI asking the brand a question — the brand's tool is answering."</em>
+
+      <span class="step">Step 4 — The MLR overlay appears (the moment) (30 sec)</span>
+      When the coral overlay appears, STOP TALKING for two beats. Then: <em>"That orange box is what the MLR team would see — every response is logged, traceable, and was approved before it ever left the building."</em>
+
+      <span class="step">Step 5 — Toggle to AI Search (45 sec)</span>
+      Click "AI Search" tab in the left pane. <em>"Same question. Different surface — this is what an AI Overview looks like. Watch the same tools light up."</em> When it finishes: <em>"One protocol. Every AI surface. Same approved answer."</em>
+
+      <span class="step">Step 6 — Stop. Don't over-narrate.</span>
+      Pause. Let them ask questions. The next slide is your soft ask.
+
+      <span class="step">If the iframe doesn't load</span>
+      Open the QR / URL on the slide directly in a browser tab. The demo also lives at the URL on the slide.
+    </aside>
+  </section>
+
+  <!-- ════════ SLIDE 9 — CLOSE / SOFT ASK ════════ -->
+  <section class="slide" data-role="main" data-title="Now mentally swap Veritrax for your brand">
+    <div class="meta-row">
+      <div class="left">
+        <span class="dot"></span>
+        <span>Close</span>
+      </div>
+      <div>08 / 09</div>
+    </div>
+
+    <div class="eyebrow">Now zoom out</div>
+    <h1 class="title">Now mentally swap "Veritrax" for <em>your brand.</em></h1>
+
+    <div class="body">
+      <div class="close-grid">
+        <div class="close-col">
+          <h3>What changes for you</h3>
+          <ul>
+            <li>Shelf space in AI answers across ChatGPT, Gemini, Claude, AI Overviews — and the agents being built on top of them.</li>
+            <li>Compliance by design. Not AI risk — AI control.</li>
+            <li>First-mover citations compound. AIs prefer sources they've successfully queried before.</li>
+          </ul>
+        </div>
+
+        <div class="close-col close-ask">
+          <h3>What we're asking today</h3>
+          <div class="ask">A second conversation — bring whoever needs to be in the room. Your <em>digital lead</em> and a voice from <em>MLR.</em></div>
+          <div class="send">
+            Send the demo home with your team
+            <span class="url">claude.ai/public/artifacts/b5f575d2-4891-4bb9-97f0-cdf307609f20</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-row">
+      <div class="source">Brands cited in AI Overviews see ~+35% organic clicks vs. uncited peers (Seer Interactive, 2025).</div>
+      <div class="counter">09 / 09</div>
+    </div>
+
+    <aside class="notes">
+      <em>"That was Veritrax. Now mentally swap your brand in. Your patient, asking your AI, about your drug — getting your answer."</em>
+
+      <em>"Two things change for the business. You get shelf space in AI answers across every major assistant. And your compliance team is on the inside of the system, not chasing it from the outside."</em>
+
+      <em>"We're not asking for a budget today. We're asking for one more conversation. Bring your digital lead. Bring someone from MLR. Send the demo link to your team tonight — try it on your phone. If the concept feels right, we'll come back and walk through what this would look like on a real brand."</em>
+
+      <span class="step">If they want to talk specifics in the room</span>
+      Don't quote a price or a timeline. <em>"Happy to scope that in the follow-up — depends on the brand and how your MLR workflow is set up today."</em>
+    </aside>
+  </section>
+
+  <!-- ════════ APPENDIX DIVIDER ════════ -->
+  <section class="slide" data-role="appendix-divider" data-title="Appendix">
+    <div class="appendix-mark">
+      <div class="label">◆ Appendix · Triggered on question</div>
+      <div class="h">The questions <em>they'll probably ask.</em></div>
+      <div class="rule"></div>
+      <div style="font-family:var(--fs-mono);font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-muted);">Press → to walk the backup layer</div>
+    </div>
+  </section>
+
+  <!-- ════════ B1 — Browser support ════════ -->
+  <section class="slide" data-role="appendix" data-title="B1 — Browser support">
+    <div class="meta-row">
+      <div class="left">
+        <span>Q1 · Browser coverage</span>
+      </div>
+      <div>B1</div>
+    </div>
+
+    <div class="qa-question">"Only Chrome — what about the others?"</div>
+
+    <div class="qa-answer">
+      <p><span class="key">Short answer</span>
+      Microsoft co-authored the spec. Edge support is highly likely. Other browsers haven't announced timelines.</p>
+
+      <p><span class="key">The pattern</span>
+      It mirrors how schema.org and OpenGraph rolled out — one browser shipped first, the rest followed within 12-18 months once adoption proved out.</p>
+
+      <p><span class="key">Even Chrome-only is</span>
+      ~65% of US browser share. Plus Chrome's engine (Chromium) powers Edge, Brave, Opera, and a long tail of others. The functional reach is significantly higher than the Chrome share alone.</p>
+    </div>
+
+    <aside class="notes">
+      Don't pretend other browsers are confirmed. They aren't. The honest framing IS the persuasive one — Microsoft co-authoring is unusually strong signal, and Chromium reach is what's actually relevant.
+    </aside>
+  </section>
+
+  <!-- ════════ B2 — FDA target surface ════════ -->
+  <section class="slide" data-role="appendix" data-title="B2 — FDA exposure">
+    <div class="meta-row">
+      <div class="left">
+        <span>Q2 · Regulatory exposure</span>
+      </div>
+      <div>B2</div>
+    </div>
+
+    <div class="qa-question">"Doesn't publishing a structured tool list make us a bigger FDA target?"</div>
+
+    <div class="qa-answer">
+      <p><span class="key">Short answer</span>
+      No — and arguably the opposite.</p>
+
+      <p><span class="key">Why</span>
+      The content in the WebMCP layer is the <strong>same MLR-approved content</strong> that already lives on your site. Structuring it doesn't change what's said — it changes how reliably it's surfaced.</p>
+
+      <p><span class="key">The flip</span>
+      Today, the FDA is using AI to find non-compliant claims in your <em>unstructured</em> content. WebMCP makes your content easier to audit — for you and for them. That's a feature for compliance, not a bug.</p>
+    </div>
+
+    <aside class="notes">
+      This is the question MLR will ask. Stay calm. The answer is genuinely strong because the underlying content doesn't change — only its discoverability does. If they push, offer to set up the next conversation specifically with their compliance lead.
+    </aside>
+  </section>
+
+  <!-- ════════ B3 — Verbatim use ════════ -->
+  <section class="slide" data-role="appendix" data-title="B3 — Verbatim use">
+    <div class="meta-row">
+      <div class="left">
+        <span>Q3 · Determinism</span>
+      </div>
+      <div>B3</div>
+    </div>
+
+    <div class="qa-question">"Can the AI still paraphrase or wrap unapproved commentary around our answer?"</div>
+
+    <div class="qa-answer">
+      <p><span class="key">Honest answer</span>
+      WebMCP guarantees the <strong>payload</strong> — the actual medical content — is served exactly as you wrote it. The AI surface (ChatGPT, Gemini, etc.) controls the framing language around it.</p>
+
+      <p><span class="key">In practice</span>
+      Most current implementations cite the source verbatim when a tool returns structured medical content. This is a platform policy decision driven by liability — not us, not the protocol. Liability is pushing the platforms in a more verbatim direction, not less.</p>
+
+      <p><span class="key">The 80/20 framing</span>
+      WebMCP solves about 80% of the determinism problem. The remaining 20% is platform policy. That's better than what you have today, which is 0% controlled.</p>
+    </div>
+
+    <aside class="notes">
+      Don't overclaim. The 80/20 framing is honest and more credible than promising perfect determinism. If they want to see a paraphrasing example, the demo's MLR overlay shows exactly what gets locked vs. what the AI surface is doing around it.
+    </aside>
+  </section>
+
+  <!-- ════════ B4 — What does this commit us to ════════ -->
+  <section class="slide" data-role="appendix" data-title="B4 — Commitment">
+    <div class="meta-row">
+      <div class="left">
+        <span>Q4 · Commitment &amp; cost</span>
+      </div>
+      <div>B4</div>
+    </div>
+
+    <div class="qa-question">"What does this commit us to? What if we want out?"</div>
+
+    <div class="qa-answer">
+      <p><span class="key">Short answer</span>
+      Nothing, and you can take it down at any time.</p>
+
+      <p><span class="key">What it actually is</span>
+      Small text files served from your existing website. No new platform. No new vendor lock. No replatform. No migration. It bolts onto whatever CMS you already use.</p>
+
+      <p><span class="key">Path back</span>
+      Take down the menu, take down the answers, AI behavior reverts to today's behavior. No data trapped, no contracts to unwind.</p>
+    </div>
+
+    <aside class="notes">
+      Procurement-style question. The answer is genuinely "nothing" — that's the honest case. Don't undersell that. It's a critical de-risking point.
+    </aside>
+  </section>
+
+  <!-- ════════ B5 — Why now ════════ -->
+  <section class="slide" data-role="appendix" data-title="B5 — Why now">
+    <div class="meta-row">
+      <div class="left">
+        <span>Q5 · Timing</span>
+      </div>
+      <div>B5</div>
+    </div>
+
+    <div class="qa-question">"Why now? Why not wait 12 months until it's stable?"</div>
+
+    <div class="qa-answer">
+      <p><span class="key">Short answer</span>
+      AIs preferentially cite sources they've successfully queried before. There's a recency-and-reliability flywheel.</p>
+
+      <p><span class="key">What that means in practice</span>
+      Brands that publish during the 2026 preview window become <strong>the default citation for their therapy class</strong> as adoption widens. Fast followers get referenced sometimes. Late movers don't.</p>
+
+      <p><span class="key">The history rhymes</span>
+      Same dynamic played out with Google snippets in 2014, with schema.org markup in 2011, and with mobile-first indexing in 2018. Brands that moved during the preview window kept the share. Brands that waited didn't catch up.</p>
+    </div>
+
+    <aside class="notes">
+      The "wait and see" objection feels safe but is the most expensive choice. Use the historical pattern — the room will recognize at least one of those examples. Don't get drawn into citing exact share-shift numbers; the pattern is what's persuasive.
+    </aside>
+  </section>
+
+  <!-- ════════ REFERENCES ════════ -->
+  <section class="slide" data-role="appendix" data-title="Sources">
+    <div class="meta-row">
+      <div class="left">
+        <span>Sources &amp; verification</span>
+      </div>
+      <div>Refs</div>
+    </div>
+
+    <div class="eyebrow">Every stat in this deck, verified</div>
+    <h1 class="title" style="font-size:38px;">Read the originals before <em>you go on stage.</em></h1>
+
+    <div class="body" style="margin-top:32px;">
+      <div class="refs">
+        <div class="ref">
+          <strong>Slide 2 · 40M daily ChatGPT health users</strong>
+          OpenAI Healthcare report (Jan 2026), via <a href="https://www.fiercehealthcare.com/ai-and-machine-learning/40m-people-use-chatgpt-answer-healthcare-questions-openai-says">Fierce Healthcare</a>; <a href="https://www.healthcaredive.com/news/40-million-use-chatgpt-health-questions-openai/808861/">Healthcare Dive</a>; <a href="https://openai.com/index/introducing-chatgpt-health/">OpenAI</a>.
+        </div>
+        <div class="ref">
+          <strong>Slide 3 · 89% AI Overview presence in healthcare</strong>
+          <a href="https://www.brightedge.com/resources/weekly-ai-search-insights/healthcare-ai-evolution-google-2023-2025">BrightEdge: Healthcare and AI Overviews — Google 2023–2025</a>; <a href="https://www.brightedge.com/resources/weekly-ai-search-insights/ai-overviews-healthcare-insights-for-finance">BrightEdge 18-month review</a>.
+        </div>
+        <div class="ref">
+          <strong>Slide 3 · −61% organic CTR with AIO</strong>
+          <a href="https://www.seerinteractive.com/insights/aio-impact-on-google-ctr-september-2025-update">Seer Interactive — AIO Impact on Google CTR, Sep 2025</a>; corroborating data from <a href="https://ahrefs.com/blog/ai-overviews-reduce-clicks-update/">Ahrefs (58%)</a>.
+        </div>
+        <div class="ref">
+          <strong>Slide 3 · 69% zero-click rate</strong>
+          Search behavior data, May 2024 → May 2025, summarized by <a href="https://www.dataslayer.ai/blog/google-ai-overviews-the-end-of-traditional-ctr-and-how-to-adapt-in-2025">Dataslayer</a>.
+        </div>
+        <div class="ref">
+          <strong>Slide 4 · Guardian misinfo investigation</strong>
+          <a href="https://www.searchenginejournal.com/the-guardian-google-ai-overviews-gave-misleading-health-advice/564476/">Guardian investigation summary</a>; <a href="https://techcrunch.com/2026/01/11/google-removes-ai-overviews-for-certain-medical-queries/">TechCrunch — Google removes AIOs for certain medical queries</a>.
+        </div>
+        <div class="ref">
+          <strong>Slide 4 · ~200 FDA OPDP letters in 2025</strong>
+          <a href="https://www.fdalawblog.com/2025/09/articles/fda/fda-unleashes-wave-of-enforcement-the-industry-faces-a-crackdown-on-drug-advertising/">FDA Law Blog — Sept 2025 enforcement wave</a>; <a href="https://www.kslaw.com/news-and-insights/2025-year-in-review-fda-drug-and-device-advertising-and-promotion-enforcement">King &amp; Spalding 2025 Year in Review</a>; <a href="https://www.lw.com/en/insights/fda-begins-crackdown-on-direct-to-consumer-pharmaceutical-advertising">Latham &amp; Watkins analysis</a>.
+        </div>
+        <div class="ref">
+          <strong>Slide 5 · WebMCP — W3C draft + Chrome 146</strong>
+          <a href="https://developer.chrome.com/blog/webmcp-epp">Chrome for Developers — WebMCP early preview</a>; <a href="https://venturebeat.com/infrastructure/google-chrome-ships-webmcp-in-early-preview-turning-every-website-into-a">VentureBeat</a>; <a href="https://searchengineland.com/webmcp-explained-inside-chrome-146s-agent-ready-web-preview-470630">Search Engine Land</a>; <a href="https://webmcp.link/">WebMCP spec site</a>.
+        </div>
+        <div class="ref">
+          <strong>Slide 9 · +35% organic CTR for AIO-cited brands</strong>
+          <a href="https://www.seerinteractive.com/insights/aio-impact-on-google-ctr-september-2025-update">Seer Interactive — Sep 2025 AIO study</a>.
+        </div>
+      </div>
+    </div>
+
+    <aside class="notes">
+      Pull the originals before any client meeting. Stats move quickly in this space — a number that's right today may be conservative or stale in three months. The direction of all of these is unanimous; the magnitudes drift.
+    </aside>
+  </section>
+
+</div>
+
+<!-- ─────── Speaker notes overlay ─────── -->
+<div class="notes-overlay" id="notesOverlay">
+  <div class="notes-meta">
+    <span id="notesSlideNum">Slide</span>
+    <span>Press <kbd style="background:rgba(250,246,237,.18);padding:2px 6px;border-radius:2px;font-family:inherit;font-size:9.5px;">S</kbd> to close</span>
+  </div>
+  <h2 id="notesTitle"></h2>
+  <div class="notes-body" id="notesBody"></div>
+</div>
+
+<!-- ─────── Help row ─────── -->
+<div class="help-overlay" id="helpRow">
+  <span><kbd>←</kbd><kbd>→</kbd> Navigate</span>
+  <span><kbd>S</kbd> Speaker notes</span>
+  <span><kbd>F</kbd> Fullscreen</span>
+  <span><kbd>?</kbd> Help</span>
+</div>
+
+<script>
+  (function() {
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const total = slides.length;
+    const progressFill = document.getElementById('progressFill');
+    const notesOverlay = document.getElementById('notesOverlay');
+    const notesTitle = document.getElementById('notesTitle');
+    const notesBody = document.getElementById('notesBody');
+    const notesSlideNum = document.getElementById('notesSlideNum');
+    const helpRow = document.getElementById('helpRow');
+
+    let current = 0;
+    let notesVisible = false;
+
+    function parseHash() {
+      const m = location.hash.match(/^#(\d+)$/);
+      if (m) {
+        const n = parseInt(m[1], 10) - 1;
+        if (n >= 0 && n < total) return n;
+      }
+      return 0;
+    }
+
+    function render() {
+      slides.forEach((s, i) => s.classList.toggle('active', i === current));
+      progressFill.style.width = ((current + 1) / total * 100) + '%';
+      location.hash = '#' + (current + 1);
+      if (notesVisible) renderNotes();
+    }
+
+    function renderNotes() {
+      const slide = slides[current];
+      const aside = slide.querySelector('aside.notes');
+      const title = slide.dataset.title || 'Slide ' + (current + 1);
+      notesTitle.textContent = title;
+      notesSlideNum.textContent = 'Slide ' + (current + 1) + ' / ' + total + ' — Speaker notes';
+      if (!aside) {
+        notesBody.innerHTML = '<p><em>No speaker notes for this slide.</em></p>';
+        return;
+      }
+      notesBody.innerHTML = aside.innerHTML;
+    }
+
+    function next() { if (current < total - 1) { current++; render(); } }
+    function prev() { if (current > 0) { current--; render(); } }
+    function goto(n) { if (n >= 0 && n < total) { current = n; render(); } }
+
+    function toggleNotes() {
+      notesVisible = !notesVisible;
+      notesOverlay.classList.toggle('visible', notesVisible);
+      if (notesVisible) renderNotes();
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(()=>{});
+      } else {
+        document.exitFullscreen().catch(()=>{});
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); next(); }
+      else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+      else if (e.key === 's' || e.key === 'S') { toggleNotes(); }
+      else if (e.key === 'f' || e.key === 'F') { toggleFullscreen(); }
+      else if (e.key === 'Home') { goto(0); }
+      else if (e.key === 'End') { goto(total - 1); }
+      else if (e.key === '?') { helpRow.classList.toggle('faded'); }
+      else if (e.key === 'Escape' && notesVisible) { toggleNotes(); }
+    });
+
+    window.addEventListener('hashchange', () => {
+      const n = parseHash();
+      if (n !== current) { current = n; render(); }
+    });
+
+    // Auto-fade help after 4 seconds
+    setTimeout(() => helpRow.classList.add('faded'), 4000);
+    document.addEventListener('mousemove', () => {
+      helpRow.classList.remove('faded');
+      clearTimeout(window._helpFadeTimer);
+      window._helpFadeTimer = setTimeout(() => helpRow.classList.add('faded'), 3000);
+    });
+
+    // Click areas — click left third to go back, right two-thirds to advance
+    document.addEventListener('click', (e) => {
+      if (notesVisible) return;
+      if (e.target.closest('iframe')) return;
+      if (e.target.closest('a')) return;
+      const x = e.clientX / window.innerWidth;
+      if (x < 0.3) prev();
+      else next();
+    });
+
+    current = parseHash();
+    render();
+  })();
+</script>
+
+</body>
+</html>
