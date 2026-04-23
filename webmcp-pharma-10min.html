@@ -23,7 +23,7 @@
     --warn-bg: #FBE4DF;
     --ink: #1A2828;
     --ink-muted: #5A6868;
-    --ink-faint: #8A938F;
+    --ink-faint: #6E7672;
     --rule: #DCD4BE;
     --paper: #FDFBF4;
 
@@ -55,7 +55,7 @@
   .slide {
     position: absolute;
     inset: 0;
-    padding: 56px 72px 64px;
+    padding: 40px 72px 48px;
     display: none;
     flex-direction: column;
     background: var(--cream);
@@ -78,7 +78,7 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--ink-faint);
-    margin-bottom: 48px;
+    margin-bottom: 28px;
     flex-shrink: 0;
   }
   .meta-row .left { display: flex; gap: 18px; align-items: center; }
@@ -96,7 +96,7 @@
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--coral-dark);
-    margin-bottom: 22px;
+    margin-bottom: 16px;
   }
 
   /* Slide title (full-sentence message) */
@@ -116,12 +116,12 @@
 
   /* Body areas */
   .body {
-    margin-top: 40px;
+    margin-top: 28px;
     flex: 1;
     min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 22px;
   }
   .lede {
     font-family: var(--fs-body);
@@ -143,7 +143,8 @@
     text-transform: uppercase;
     color: var(--ink-faint);
     flex-shrink: 0;
-    padding-top: 24px;
+    padding-top: 14px;
+    margin-top: 18px;
     border-top: 1px solid var(--rule);
   }
   .footer-row .source {
@@ -460,7 +461,7 @@
     background: var(--paper);
   }
   .mlr-table .row .arrow {
-    color: var(--coral);
+    color: var(--coral-dark);
     font-style: italic;
     font-family: var(--fs-display);
   }
@@ -570,10 +571,10 @@
     word-break: break-all;
   }
   .demo-share .hint {
-    color: var(--coral-dark);
+    color: var(--brand);
     font-style: italic;
     font-family: var(--fs-display);
-    font-size: 16px;
+    font-size: 17px;
   }
 
   /* ───────── Close slide ───────── */
@@ -614,7 +615,7 @@
     color: var(--cream);
     padding: 32px 28px;
   }
-  .close-ask h3 { color: var(--coral); }
+  .close-ask h3 { color: #FFD580; font-size: 12px; }
   .close-ask .ask {
     font-family: var(--fs-display);
     font-weight: 400;
@@ -639,7 +640,7 @@
     font-size: 12px;
     text-transform: none;
     letter-spacing: 0.04em;
-    color: var(--coral);
+    color: #FFD580;
     margin-top: 6px;
     word-break: break-all;
   }
@@ -907,7 +908,6 @@
         <span class="dot"></span>
         <span>The shift</span>
       </div>
-      <div>01 / 09</div>
     </div>
 
     <div class="hero-number">
@@ -937,7 +937,6 @@
         <span class="dot"></span>
         <span>The distribution problem</span>
       </div>
-      <div>02 / 09</div>
     </div>
 
     <div class="eyebrow">Meanwhile, on Google</div>
@@ -984,7 +983,6 @@
         <span class="dot"></span>
         <span>The risk on both sides</span>
       </div>
-      <div>03 / 09</div>
     </div>
 
     <div class="eyebrow">The twist</div>
@@ -1034,7 +1032,6 @@
         <span class="dot"></span>
         <span>The new layer</span>
       </div>
-      <div>04 / 09</div>
     </div>
 
     <div class="eyebrow">Introducing</div>
@@ -1099,7 +1096,6 @@
         <span class="dot"></span>
         <span>The MLR inversion</span>
       </div>
-      <div>05 / 09</div>
     </div>
 
     <div class="eyebrow">For the compliance people in the room</div>
@@ -1153,7 +1149,6 @@
         <span class="dot"></span>
         <span>Demo setup</span>
       </div>
-      <div>06 / 09</div>
     </div>
 
     <div class="veritrax-card">
@@ -1230,7 +1225,6 @@
         <span class="dot"></span>
         <span>Close</span>
       </div>
-      <div>08 / 09</div>
     </div>
 
     <div class="eyebrow">Now zoom out</div>
@@ -1291,7 +1285,6 @@
       <div class="left">
         <span>Q1 · Browser coverage</span>
       </div>
-      <div>B1</div>
     </div>
 
     <div class="qa-question">"Only Chrome — what about the others?"</div>
@@ -1318,7 +1311,6 @@
       <div class="left">
         <span>Q2 · Regulatory exposure</span>
       </div>
-      <div>B2</div>
     </div>
 
     <div class="qa-question">"Doesn't publishing a structured tool list make us a bigger FDA target?"</div>
@@ -1345,7 +1337,6 @@
       <div class="left">
         <span>Q3 · Determinism</span>
       </div>
-      <div>B3</div>
     </div>
 
     <div class="qa-question">"Can the AI still paraphrase or wrap unapproved commentary around our answer?"</div>
@@ -1372,7 +1363,6 @@
       <div class="left">
         <span>Q4 · Commitment &amp; cost</span>
       </div>
-      <div>B4</div>
     </div>
 
     <div class="qa-question">"What does this commit us to? What if we want out?"</div>
@@ -1399,7 +1389,6 @@
       <div class="left">
         <span>Q5 · Timing</span>
       </div>
-      <div>B5</div>
     </div>
 
     <div class="qa-question">"Why now? Why not wait 12 months until it's stable?"</div>
@@ -1426,7 +1415,6 @@
       <div class="left">
         <span>Sources &amp; verification</span>
       </div>
-      <div>Refs</div>
     </div>
 
     <div class="eyebrow">Every stat in this deck, verified</div>
