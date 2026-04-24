@@ -8,19 +8,19 @@
 
 ## What WebMCP is — in one sentence
 
-**WebMCP is a way for a brand's website to publish a list of approved answers that AI assistants like ChatGPT, Gemini, and Claude can read directly — instead of guessing or pulling from random sources.**
+**WebMCP is almost like ADA compliance for AI assistants — a structured, approved content layer your brand publishes so AI agents can read your answers directly, instead of guessing or pulling from random sources.**
 
-That's it. Everything else is detail.
+Same playbook as ADA accessibility. New category of reader. Everything else is detail.
 
 ---
 
 ## Three things to remember
 
-1. **It's content work, not engineering.** The brand publishes a small set of structured answers ("here's the dosing info, here's the interactions list, here's the side effects") on their existing website. AI assistants read those answers when patients ask questions.
+1. **It's accessibility work — for AI agents.** Same category as ADA compliance: structured content that lets a specific class of reader access your site reliably. ADA does this for screen readers; WebMCP does it for AI assistants. Same family as schema.org tags, OpenGraph snippets, ALT text — structured content for non-human readers.
 
-2. **It's the same family as things you already do.** Schema.org tags, OpenGraph snippets, the ALT text on images — that whole world of "structured content for machines." WebMCP is in that family. The audience is just new (AI assistants instead of search crawlers).
+2. **It's content. It's not engineering.** The brand publishes a small set of MLR-approved structured answers ("here's the dosing info, here's the interactions list, here's the side effects") on their existing website. Same cycle your agency already runs — just a new surface to publish to.
 
-3. **The agency owns it.** Brand IT does a few hours of plumbing — they wire up one URL on the website. Everything else — what questions to publish, what the answers say, the MLR cycle, updates as new data lands — is the agency's content workflow. Same as everything else you do.
+3. **The agency owns it.** Brand IT does a few hours of plumbing — they wire up one URL on the website. Everything else — what questions to publish, what the answers say, the MLR cycle, updates as new data lands — is the agency's content workflow. Same as ADA accessibility content.
 
 ---
 
@@ -41,11 +41,11 @@ Then move on. Don't get pulled into a technical compare-and-contrast. The deck h
 
 ## What to say if a client asks "isn't this just an API?"
 
-Yes, technically. But that framing is unhelpful and feels engineering-y. Better:
+Yes, technically. But the comparison that lands is ADA — because ADA accessibility markup is technically an API too, and yet nobody in the room thinks of ADA as engineering work.
 
-> *"In the technical sense, yes. But for your team it works exactly like any other content workflow — your agency writes approved answers and publishes them. The technical wiring is a few hours of one-time setup. Everything that matters happens in the existing MLR cycle."*
+> *"In the technical sense, yes — but compare it to ADA accessibility markup. That's also technically an API, but nobody calls it that, because the work is content, not engineering. WebMCP is the same — your agency writes approved answers, your existing MLR cycle reviews them, and they get published."*
 
-Then steer back to the menu metaphor: **"Your website hands the AI a menu of questions it can answer."**
+That comparison shuts down the routing-to-IT impulse faster than anything else.
 
 ---
 

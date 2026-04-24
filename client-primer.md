@@ -18,9 +18,11 @@ You're being talked about by AI you don't control. You're being watched by AI yo
 
 ## What WebMCP is
 
-**WebMCP is a new way for your brand's website to publish approved answers that AI assistants can read directly — so when someone asks an AI about your drug, your answer is what the AI uses, instead of whatever the AI would have invented from scratch.**
+**WebMCP is almost like ADA compliance for AI assistants — a structured, MLR-approved content layer your brand publishes so AI agents can read your answers directly, instead of guessing or pulling from random sources.**
 
 It's a new web standard, co-authored by Google and Microsoft, published through the W3C in February 2026. It's available in Chrome's early-preview channel today.
+
+The parallel to ADA is the cleanest mental model. ADA accessibility markup exists because some readers — people using assistive technology — can't reliably navigate your content unless you publish it in a structured, machine-readable way. WebMCP solves the same kind of problem for a new category of reader: AI assistants like ChatGPT, Gemini, and Claude. Same kind of structured-content work. Same kind of agency-led ownership. Different audience.
 
 Practically, it works like this: your website declares a small list of questions it knows how to answer ("what's the dosing?" "what are the interactions?" "what are the side effects?") and the exact, MLR-approved answer for each. Any AI assistant that gets asked one of those questions can read your declared answer and use it directly.
 
@@ -28,7 +30,9 @@ Practically, it works like this: your website declares a small list of questions
 
 ## The metaphor that helps
 
-Today, an AI looking at your website is like a stranger walking into a kitchen and trying to figure out what to cook. WebMCP lets your website hand the AI a printed menu — *here are the questions I'll answer, and here's exactly what to say for each one.* The AI orders from the menu. Your website serves the answer. Same answer, every time, on every AI assistant.
+Today, an AI reading your website is like a screen reader trying to navigate a page with no ALT text and no semantic markup — guessing at what the content means. WebMCP is the structured layer that lets it read your approved content directly, the same way ADA-compliant markup lets a screen reader navigate cleanly. Your brand serves the answer. Same answer, every time, on every AI assistant.
+
+(One important difference from ADA: WebMCP is not legally mandated. It's a compliance category in spirit — the same kind of work, the same kind of ownership — but adopting it is a strategic choice, not a regulatory one. Yet.)
 
 ---
 
